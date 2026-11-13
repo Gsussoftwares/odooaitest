@@ -1,0 +1,36 @@
+.lai-systray-ai-engine {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    height: 100%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.08);
+
+        .lai-gemini-sparkle {
+            transform: scale(1.18) rotate(8deg);
+            filter: drop-shadow(0 0 6px rgba(255, 165, 0, 0.6));
+        }
+
+        .lai-ai-text {
+            color: #d97706 !important;
+        }
+    }
+
+    .lai-gemini-sparkle {
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .lai-ai-text {
+        letter-spacing: 0.5px;
+        transition: color 0.2s ease;
+    }
+}

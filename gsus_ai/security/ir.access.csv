@@ -1,0 +1,19 @@
+id,name,model_id,group_id/id,operation,domain
+access_gsus_ai_conversation_mgr,gsus.ai.conversation.mgr,gsus.ai.conversation,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_conversation_user,gsus.ai.conversation.user,gsus.ai.conversation,gsus_ai.group_gsus_ai_user,crud,"[('user_id', '=', user.id)]"
+access_gsus_ai_message_mgr,gsus.ai.message.mgr,gsus.ai.message,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_message_user,gsus.ai.message.user,gsus.ai.message,gsus_ai.group_gsus_ai_user,crud,"[('conversation_id.user_id', '=', user.id)]"
+access_gsus_ai_agent_mgr,gsus.ai.agent.mgr,gsus.ai.agent,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_agent_user,gsus.ai.agent.user,gsus.ai.agent,gsus_ai.group_gsus_ai_user,r,
+access_gsus_ai_prompt_template_mgr,gsus.ai.prompt.template.mgr,gsus.ai.prompt.template,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_prompt_template_user,gsus.ai.prompt.template.user,gsus.ai.prompt.template,gsus_ai.group_gsus_ai_user,r,
+access_gsus_ai_tool_mgr,gsus.ai.tool.mgr,gsus.ai.tool,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_tool_user,gsus.ai.tool.user,gsus.ai.tool,gsus_ai.group_gsus_ai_user,r,
+access_gsus_ai_action_proposal_mgr,gsus.ai.action.proposal.mgr,gsus.ai.action.proposal,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_action_proposal_user,gsus.ai.action.proposal.user,gsus.ai.action.proposal,gsus_ai.group_gsus_ai_user,crud,"[('conversation_id.user_id', '=', user.id)]"
+access_gsus_ai_audit_log_mgr,gsus.ai.audit.log.mgr,gsus.ai.audit.log,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_audit_log_user,gsus.ai.audit.log.user,gsus.ai.audit.log,gsus_ai.group_gsus_ai_user,cr,
+access_gsus_ai_skill_mgr,gsus.ai.skill.mgr,gsus.ai.skill,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_skill_user,gsus.ai.skill.user,gsus.ai.skill,gsus_ai.group_gsus_ai_user,r,
+access_gsus_ai_default_prompt_mgr,gsus.ai.default.prompt.mgr,gsus.ai.default.prompt,gsus_ai.group_gsus_ai_manager,crud,
+access_gsus_ai_default_prompt_user,gsus.ai.default.prompt.user,gsus.ai.default.prompt,gsus_ai.group_gsus_ai_user,r,

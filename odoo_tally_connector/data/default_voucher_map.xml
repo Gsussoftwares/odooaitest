@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Default Tally Voucher Type Mappings
+        =====================================
+        Maps Odoo account.move types to standard Tally Prime voucher types.
+        These can be customized from the Tally Connector > Voucher Mapping menu.
+    -->
+    <data noupdate="1">
+
+        <record id="tvmap_out_invoice" model="tally.voucher.map">
+            <field name="move_type">out_invoice</field>
+            <field name="tally_voucher_type">Sales</field>
+            <field name="tally_persistedview">Invoice Voucher View</field>
+        </record>
+
+        <record id="tvmap_in_invoice" model="tally.voucher.map">
+            <field name="move_type">in_invoice</field>
+            <field name="tally_voucher_type">Purchase</field>
+            <field name="tally_persistedview">Invoice Voucher View</field>
+        </record>
+
+        <record id="tvmap_out_refund" model="tally.voucher.map">
+            <field name="move_type">out_refund</field>
+            <field name="tally_voucher_type">Credit Note</field>
+            <field name="tally_persistedview">Invoice Voucher View</field>
+        </record>
+
+        <record id="tvmap_in_refund" model="tally.voucher.map">
+            <field name="move_type">in_refund</field>
+            <field name="tally_voucher_type">Debit Note</field>
+            <field name="tally_persistedview">Invoice Voucher View</field>
+        </record>
+
+        <record id="tvmap_out_receipt" model="tally.voucher.map">
+            <field name="move_type">out_receipt</field>
+            <field name="tally_voucher_type">Receipt</field>
+            <field name="tally_persistedview">Accounting Voucher View</field>
+        </record>
+
+        <record id="tvmap_in_receipt" model="tally.voucher.map">
+            <field name="move_type">in_receipt</field>
+            <field name="tally_voucher_type">Payment</field>
+            <field name="tally_persistedview">Accounting Voucher View</field>
+        </record>
+
+    </data>
+</odoo>

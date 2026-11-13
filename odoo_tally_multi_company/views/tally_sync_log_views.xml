@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sync Log List Inherit -->
+    <record id="view_tally_sync_log_list_multi_inherit" model="ir.ui.view">
+        <field name="name">tally.sync.log.list.multi.inherit</field>
+        <field name="model">tally.sync.log</field>
+        <field name="inherit_id" ref="odoo_tally_connector.view_tally_sync_log_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_name']" position="after">
+                <field name="tally_company_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Sync Log Form Inherit -->
+    <record id="view_tally_sync_log_form_multi_inherit" model="ir.ui.view">
+        <field name="name">tally.sync.log.form.multi.inherit</field>
+        <field name="model">tally.sync.log</field>
+        <field name="inherit_id" ref="odoo_tally_connector.view_tally_sync_log_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="tally_company_id" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

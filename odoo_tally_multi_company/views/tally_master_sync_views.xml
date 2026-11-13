@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tally_master_sync_form_multi_inherit" model="ir.ui.view">
+        <field name="name">tally.master.sync.form.multi.inherit</field>
+        <field name="model">tally.master.sync</field>
+        <field name="inherit_id" ref="odoo_tally_connector.view_tally_master_sync_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('alert')]" position="after">
+                <group>
+                    <field name="tally_company_id" 
+                           placeholder="Select Target Tally Company..."
+                           options="{'no_create_edit': True}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tool List View -->
+    <record id="view_gsus_ai_tool_tree" model="ir.ui.view">
+        <field name="name">gsus.ai.tool.list</field>
+        <field name="model">gsus.ai.tool</field>
+        <field name="arch" type="xml">
+            <list string="Tools" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name" string="Name"/>
+                <field name="code" string="Identifier"/>
+                <field name="domain_category" string="Category" widget="badge"/>
+                <field name="skill_ids" widget="many2many_tags" string="Skills"/>
+                <field name="is_readonly" string="Readonly tool"/>
+                <field name="use_in_ai" string="Use in AI" widget="boolean_toggle"/>
+                <field name="requires_confirmation" string="Requires Approval" widget="boolean_toggle"/>
+                <field name="is_active" string="Active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Tool Search View -->
+    <record id="view_gsus_ai_tool_search" model="ir.ui.view">
+        <field name="name">gsus.ai.tool.search</field>
+        <field name="model">gsus.ai.tool</field>
+        <field name="arch" type="xml">
+            <search string="Search Tools">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="domain_category"/>
+                <filter name="use_in_ai" string="Use in AI is set" domain="[('use_in_ai', '=', True)]"/>
+                <filter name="readonly" string="Readonly Tools" domain="[('is_readonly', '=', True)]"/>
+                <filter name="active" string="Active Tools" domain="[('is_active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Tool Form View -->
+    <record id="view_gsus_ai_tool_form" model="ir.ui.view">
+        <field name="name">gsus.ai.tool.form</field>
+        <field name="model">gsus.ai.tool</field>
+        <field name="arch" type="xml">
+            <form string="Business Tool Registry">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Tool Name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="tool_main" string="Tool Identification">
+                            <field name="code"/>
+                            <field name="domain_category"/>
+                            <field name="skill_ids" widget="many2many_tags"/>
+                            <field name="use_in_ai" widget="boolean_toggle"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                        </group>
+                        <group name="tool_security" string="Operation &amp; Safety">
+                            <field name="operation_type"/>
+                            <field name="is_readonly"/>
+                            <field name="requires_confirmation"/>
+                            <field name="execution_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description &amp; AI Prompt" name="description">
+                            <field name="description" placeholder="Explain clearly what this tool accomplishes and when to call it..."/>
+                        </page>
+                        <page string="JSON Schema Parameters" name="json_schema">
+                            <field name="json_schema_text" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_gsus_ai_tool" model="ir.actions.act_window">
+        <field name="name">Tools</field>
+        <field name="res_model">gsus.ai.tool</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_gsus_ai_tool_search"/>
+        <field name="context">{'search_default_use_in_ai': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Manage the registered Odoo ORM business tools callable by AI agents. Toggle 'Use in AI' to enable or disable specific tools.
+            </p>
+        </field>
+    </record>
+</odoo>

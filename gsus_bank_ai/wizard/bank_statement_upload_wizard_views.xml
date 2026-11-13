@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gsus_bank_statement_upload_wizard_form" model="ir.ui.view">
+        <field name="name">gsus.bank.statement.upload.wizard.form</field>
+        <field name="model">gsus.bank.statement.upload.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Upload Bank Statement (AI)">
+                <div class="text-center p-3 mb-3 bg-light rounded border">
+                    <i class="fa fa-cloud-upload fa-3x text-primary mb-2"/>
+                    <h3 class="fw-bold">Upload Your Bank Statement</h3>
+                    <p class="text-muted mb-0">
+                        Supports PDF (all Indian &amp; International banks), Scanned Images, and CSV/Excel.
+                        Gemini &amp; OpenAI Vision AI will automatically detect headers, extract transactions, and auto-match ledgers.
+                    </p>
+                </div>
+                <group>
+                    <field name="file_data" filename="file_name" widget="binary" string="Statement Document (PDF, Image, CSV)"/>
+                    <field name="file_name" invisible="1"/>
+                </group>
+                <group>
+                    <field name="pdf_password" password="True" placeholder="Only required if statement PDF is password protected"/>
+                </group>
+                <footer>
+                    <button name="action_upload_and_process" type="object" string="Start AI Processing &amp; Review" class="btn-primary" icon="fa-bolt"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gsus_bank_statement_upload_wizard" model="ir.actions.act_window">
+        <field name="name">Upload Bank Statement</field>
+        <field name="res_model">gsus.bank.statement.upload.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

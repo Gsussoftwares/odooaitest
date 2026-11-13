@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Client Action for OWL Chat Interface -->
+    <record id="action_gsus_ai_chat_panel" model="ir.actions.client">
+        <field name="name">AI Assistant</field>
+        <field name="tag">gsus_ai.chat_panel</field>
+    </record>
+
+    <!-- Top-Level App Menu -->
+    <menuitem id="menu_gsus_ai_root"
+              name="AI"
+              action="action_gsus_ai_chat_panel"
+              web_icon="gsus_ai,static/description/icon_3d.png"
+              sequence="15"/>
+
+    <!-- Primary Assistant Menu (Opens OWL Chat) -->
+    <menuitem id="menu_gsus_ai_assistant"
+              name="AI Assistant"
+              parent="menu_gsus_ai_root"
+              action="action_gsus_ai_chat_panel"
+              sequence="5"/>
+
+    <menuitem id="menu_gsus_ai_agents_top"
+              name="Agents"
+              parent="menu_gsus_ai_root"
+              action="action_gsus_ai_agent"
+              sequence="8"/>
+
+    <!-- Operational Submenus -->
+    <menuitem id="menu_gsus_ai_conversations"
+              name="Chat History"
+              parent="menu_gsus_ai_root"
+              action="action_gsus_ai_conversation"
+              sequence="10"/>
+
+    <menuitem id="menu_gsus_ai_proposals"
+              name="Action Approvals"
+              parent="menu_gsus_ai_root"
+              action="action_gsus_ai_action_proposal"
+              sequence="20"/>
+
+    <!-- Configuration & Management Submenu -->
+    <menuitem id="menu_gsus_ai_config"
+              name="Configuration"
+              parent="menu_gsus_ai_root"
+              sequence="50"
+              groups="group_gsus_ai_manager"/>
+
+    <menuitem id="menu_gsus_ai_agents"
+              name="Agents"
+              parent="menu_gsus_ai_config"
+              action="action_gsus_ai_agent"
+              sequence="10"/>
+
+    <menuitem id="menu_gsus_ai_skills"
+              name="Skills"
+              parent="menu_gsus_ai_config"
+              action="action_gsus_ai_skill"
+              sequence="15"/>
+
+    <menuitem id="menu_gsus_ai_tools"
+              name="Tools"
+              parent="menu_gsus_ai_config"
+              action="action_gsus_ai_tool"
+              sequence="20"/>
+
+    <menuitem id="menu_gsus_ai_default_prompts"
+              name="Default Prompts"
+              parent="menu_gsus_ai_config"
+              action="action_gsus_ai_default_prompt"
+              sequence="25"/>
+
+    <menuitem id="menu_gsus_ai_providers_shortcut"
+              name="AI Providers &amp; Connections"
+              parent="menu_gsus_ai_config"
+              action="gsus_ai_bridge.action_gsus_ai_provider"
+              sequence="30"/>
+
+    <menuitem id="menu_gsus_ai_audit"
+              name="Audit Logs"
+              parent="menu_gsus_ai_config"
+              action="action_gsus_ai_audit_log"
+              sequence="40"/>
+</odoo>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Invoice/Bill/Journal Entry Form View: Unified 'Tally Integration' Tab & Controls -->
+    <record id="view_move_form_tally_multi_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.tally.multi.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="odoo_tally_connector.view_move_form_tally_inherit"/>
+        <field name="priority" eval="35"/>
+        <field name="arch" type="xml">
+            <!-- Ensure Header Sync Button is visible for all posted moves including manual journal entries -->
+            <xpath expr="//button[@name='action_sync_to_tally']" position="replace">
+                <button string="Sync to Tally Now"
+                        name="action_sync_to_tally"
+                        type="object"
+                        class="btn-primary"
+                        id="btn_sync_to_tally_header"
+                        invisible="state != 'posted'"/>
+            </xpath>
+
+            <!-- Ensure Tally Logs Stat Button is always accessible -->
+            <xpath expr="//button[@name='action_view_tally_logs']" position="replace">
+                <button name="action_view_tally_logs"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-exchange">
+                    <field name="tally_sync_log_count" widget="statinfo" string="Tally Logs"/>
+                </button>
+            </xpath>
+
+            <!-- Hide the separate Tally GST Sync page -->
+            <xpath expr="//page[@name='tally_gst_sync_page']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Replace the old tally_sync_page with the unified multi-company page for all document types -->
+            <xpath expr="//page[@name='tally_sync_page']" position="replace">
+                <page string="Tally Integration" name="tally_sync_page">
+                    <group>
+                        <group string="Tally Destination">
+                            <field name="tally_company_id" 
+                                   placeholder="Derived from Partner or select manually..."
+                                   options="{'no_create_edit': True}"/>
+                        </group>
+                        <group string="Tally Sync Status">
+                            <field name="tally_sync_status" widget="badge"
+                                   decoration-success="tally_sync_status == 'synced'"
+                                   decoration-danger="tally_sync_status == 'failed'"
+                                   decoration-warning="tally_sync_status == 'pending'"
+                                   decoration-muted="tally_sync_status == 'skipped'"
+                                   readonly="1"/>
+                            <field name="tally_guid" readonly="1" invisible="not tally_guid"/>
+                            <field name="tally_last_sync" readonly="1" invisible="not tally_last_sync"/>
+                            <field name="tally_gst_sync_status" widget="badge"
+                                   decoration-success="tally_gst_sync_status == 'synced'"
+                                   decoration-danger="tally_gst_sync_status == 'failed'"
+                                   decoration-warning="tally_gst_sync_status == 'pending'"
+                                   decoration-muted="tally_gst_sync_status == 'skipped'"
+                                   readonly="1"
+                                   invisible="not tally_has_gst_data"/>
+                        </group>
+                    </group>
+                    <group string="Actions" invisible="state != 'posted'">
+                        <div>
+                            <button string="Sync to Tally Now"
+                                    name="action_sync_to_tally"
+                                    type="object"
+                                    class="btn btn-primary"
+                                    id="btn_sync_to_tally_tab"
+                                    invisible="tally_sync_status == 'synced'"/>
+                            <button string="Re-Sync (Force)"
+                                    name="action_sync_to_tally"
+                                    type="object"
+                                    class="btn btn-warning"
+                                    id="btn_resync_to_tally"
+                                    invisible="tally_sync_status != 'synced'"/>
+                            <button string="View Sync Logs"
+                                    name="action_view_tally_logs"
+                                    type="object"
+                                    class="btn btn-secondary"
+                                    id="btn_view_tally_logs"/>
+                            <button string="Sync E-Invoice / E-Way Bill"
+                                    name="action_sync_gst_to_tally"
+                                    type="object"
+                                    class="btn btn-secondary"
+                                    id="btn_sync_gst_to_tally_tab"
+                                    invisible="not tally_has_gst_data"/>
+                        </div>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Invoice Tree View Inherit -->
+    <record id="view_invoice_tree_tally_multi_inherit" model="ir.ui.view">
+        <field name="name">account.invoice.tree.tally.multi.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='status_in_payment']" position="before">
+                <field name="tally_company_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

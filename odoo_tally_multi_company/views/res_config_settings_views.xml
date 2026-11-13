@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_tally_multi" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.tally.multi</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="odoo_tally_connector.res_config_settings_view_form_tally"/>
+        <field name="arch" type="xml">
+            <!-- Hide single-company settings -->
+            <xpath expr="//setting[@id='tally_server_url_setting']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='tally_company_setting']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='tally_stock_group_setting']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='tally_test_btn_setting']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Add Manage Tally Companies button in their place -->
+            <xpath expr="//setting[@id='tally_test_btn_setting']" position="after">
+                <setting id="tally_multi_company_manage_setting" string="Tally Company Integration" help="Connect and manage multiple Tally Prime companies on the same machine (different ports) or across your network.">
+                    <button string="🏢 Manage Tally Companies"
+                            name="action_open_tally_companies"
+                            type="object"
+                            class="btn btn-primary"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

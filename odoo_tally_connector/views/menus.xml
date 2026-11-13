@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================
+         Tally Connector — Menu Structure & Test Wizard
+    ============================================================ -->
+
+    <!--
+        Parent must NOT be account.menu_finance (Invoicing app root).
+
+        Odoo's load_web_menus() sets each *app* action to the first nested menu
+        that has an action (walking only the first child at each level). When the
+        enterprise "Accounting" (accountant) module is installed, almost all
+        children of menu_finance are moved under menu_accounting — leaving this
+        menu as the only child of Invoicing. The first child here was "Test
+        Connection", so clicking the Invoicing *app icon* opened that popup only.
+
+        Hanging Tally under Customers keeps the Invoicing/Accounting apps sane;
+        menu_finance_receivables stays under the correct app root with or without
+        accountant (it is reparented to menu_accounting when Accounting is used).
+    -->
+    <menuitem id="menu_tally_connector_root"
+              name="Tally Connector"
+              parent="account.menu_finance_receivables"
+              sequence="250"/>
+
+    <!-- Sync Logs -->
+    <menuitem id="menu_tally_sync_logs"
+              name="Sync Logs"
+              parent="menu_tally_connector_root"
+              action="action_tally_sync_log"
+              sequence="5"/>
+
+    <menuitem id="menu_tally_gst_sync_logs"
+              name="E-Invoice / E-Way Bill Logs"
+              parent="menu_tally_connector_root"
+              action="action_tally_gst_sync_log"
+              sequence="6"/>
+
+    <!-- Mapping sub-menu -->
+    <menuitem id="menu_tally_mapping"
+              name="Mappings"
+              parent="menu_tally_connector_root"
+              sequence="20"/>
+
+    <menuitem id="menu_tally_ledger_map"
+              name="Ledger Mapping"
+              parent="menu_tally_mapping"
+              action="action_tally_ledger_map"
+              sequence="10"/>
+
+    <menuitem id="menu_tally_voucher_map"
+              name="Voucher Type Mapping"
+              parent="menu_tally_mapping"
+              action="action_tally_voucher_map"
+              sequence="20"/>
+
+    <menuitem id="menu_tally_product_category_map"
+              name="Product Category Mapping"
+              parent="menu_tally_mapping"
+              action="action_tally_product_category_map"
+              sequence="25"/>
+
+    <menuitem id="menu_tally_hsn_description_map"
+              name="HSN Description Mapping"
+              parent="menu_tally_mapping"
+              action="action_tally_hsn_description_map"
+              sequence="27"/>
+
+    <menuitem id="menu_tally_uom_map"
+              name="UoM Mapping"
+              parent="menu_tally_mapping"
+              action="action_tally_uom_map"
+              sequence="30"/>
+
+    <!-- Test Connection -->
+    <record id="action_tally_test_connection_wizard" model="ir.actions.act_window">
+        <field name="name">Test Tally Connection</field>
+        <field name="res_model">tally.test.connection</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_tally_test_connection"
+              name="Test Connection"
+              parent="menu_tally_connector_root"
+              action="action_tally_test_connection_wizard"
+              sequence="50"/>
+
+    <!-- Bulk Master Sync -->
+    <menuitem id="menu_tally_master_sync"
+              name="Bulk Master Sync"
+              parent="menu_tally_connector_root"
+              action="action_tally_master_sync"
+              sequence="30"/>
+
+</odoo>

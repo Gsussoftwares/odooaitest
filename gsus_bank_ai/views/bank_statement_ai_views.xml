@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Full-Screen Interactive OWL 3 Client Action Workbench (LedgerAI Experience) -->
+    <record id="action_gsus_bank_workbench_client" model="ir.actions.client">
+        <field name="name">Bank Statement AI Workbench</field>
+        <field name="tag">gsus_bank_workbench_action</field>
+        <field name="target">current</field>
+        <field name="context">{'initial_view': 'dashboard'}</field>
+        <field name="params" eval="{'initial_view': 'dashboard'}"/>
+    </record>
+
+    <record id="action_gsus_bank_workbench_upload" model="ir.actions.client">
+        <field name="name">Upload Bank Statement</field>
+        <field name="tag">gsus_bank_workbench_upload_action</field>
+        <field name="target">current</field>
+        <field name="context">{'initial_view': 'upload'}</field>
+        <field name="params" eval="{'initial_view': 'upload'}"/>
+    </record>
+
+    <record id="action_gsus_bank_workbench_review" model="ir.actions.client">
+        <field name="name">Bank Statement Review</field>
+        <field name="tag">gsus_bank_workbench_review_action</field>
+        <field name="target">current</field>
+        <field name="context">{'initial_view': 'review'}</field>
+        <field name="params" eval="{'initial_view': 'review'}"/>
+    </record>
+
+    <!-- List View -->
+    <record id="view_gsus_bank_statement_ai_tree" model="ir.ui.view">
+        <field name="name">gsus.bank.statement.ai.tree</field>
+        <field name="model">gsus.bank.statement.ai</field>
+        <field name="arch" type="xml">
+            <list string="Bank Statement AI Batches" decoration-info="state == 'parsed'" decoration-success="state == 'pushed'">
+                <field name="statement_date"/>
+                <field name="name"/>
+                <field name="bank_name"/>
+                <field name="journal_id"/>
+                <field name="total_transactions" string="Total Lines"/>
+                <field name="total_debit" widget="monetary"/>
+                <field name="total_credit" widget="monetary"/>
+                <field name="net_flow" widget="monetary"/>
+                <field name="confidence_avg" string="Match %" widget="progressbar"/>
+                <field name="state" widget="badge" decoration-warning="state == 'draft'" decoration-info="state == 'parsed'" decoration-primary="state == 'reviewed'" decoration-success="state == 'pushed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View with Embedded Creative OWL 3 Workbench -->
+    <record id="view_gsus_bank_statement_ai_form" model="ir.ui.view">
+        <field name="name">gsus.bank.statement.ai.form</field>
+        <field name="model">gsus.bank.statement.ai</field>
+        <field name="arch" type="xml">
+            <form string="Bank Statement AI Staging Workbench">
+                <header>
+                    <button name="action_open_workbench" type="object" string="Open Staging" class="btn-primary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,parsed,reviewed,pushed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Pushed to Odoo" bg_color="text-bg-success" invisible="state != 'pushed'"/>
+                    <div class="oe_title">
+                        <label for="name" string="Statement Session"/>
+                        <h1>
+                            <field name="name" placeholder="Statement Title..."/>
+                        </h1>
+                    </div>
+
+                    <!-- Standard Form Fields / Fallback Tab -->
+                    <notebook>
+                        <page string="Transaction Lines Table" name="lines">
+                            <field name="line_ids">
+                                <list string="Transactions" editable="bottom" decoration-success="status == 'reviewed'" decoration-info="status == 'suggested'" decoration-muted="status == 'pending'">
+                                    <field name="date"/>
+                                    <field name="payment_mode" widget="badge"/>
+                                    <field name="transaction_type" widget="badge" optional="show"/>
+                                    <field name="narration"/>
+                                    <field name="reference"/>
+                                    <field name="debit" sum="Total Debit" widget="monetary"/>
+                                    <field name="credit" sum="Total Credit" widget="monetary"/>
+                                    <field name="balance" optional="show"/>
+                                    <field name="partner_id" options="{'no_create_edit': False}"/>
+                                    <field name="contact_status" widget="badge" decoration-success="contact_status in ('approved', 'existing')" decoration-warning="contact_status == 'new_proposed'" decoration-muted="contact_status == 'no_contact_needed'" optional="show"/>
+                                    <field name="account_id" options="{'no_create_edit': False}"/>
+                                    <field name="confidence_percent" string="Match %" widget="progressbar"/>
+                                    <field name="status" widget="badge" decoration-warning="status == 'pending'" decoration-info="status == 'suggested'" decoration-success="status in ('reviewed', 'pushed')"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Session Configuration" name="config">
+                            <group>
+                                <group string="Banking Details">
+                                    <field name="bank_name"/>
+                                    <field name="account_number"/>
+                                    <field name="account_holder"/>
+                                    <field name="journal_id" options="{'no_create': True}"/>
+                                    <field name="currency_id" options="{'no_create': True}"/>
+                                </group>
+                                <group string="Balance Cross-Check">
+                                    <field name="opening_balance"/>
+                                    <field name="closing_balance"/>
+                                    <field name="net_flow" readonly="1"/>
+                                    <field name="account_bank_statement_id" readonly="1"/>
+                                </group>
+                            </group>
+                            <group string="Source Document">
+                                <field name="file_data" filename="file_name" widget="binary"/>
+                                <field name="file_name" invisible="1"/>
+                                <field name="pdf_password" password="True" placeholder="Password if protected"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action Window -->
+    <record id="action_gsus_bank_statement_ai" model="ir.actions.act_window">
+        <field name="name">AI Bank Statement Workbench</field>
+        <field name="res_model">gsus.bank.statement.ai</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Upload your first Bank Statement PDF to experience AI auto-parsing and reconciliation!
+            </p>
+        </field>
+    </record>
+</odoo>

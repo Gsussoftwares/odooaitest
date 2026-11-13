@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Partner Form View: Replaces old Tally Sync tab with unified Tally Integration tab -->
+    <record id="view_partner_form_tally_multi_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.tally.multi.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority" eval="30"/>
+        <field name="arch" type="xml">
+
+            <!-- Replace the old single-company tally_connector page with the multi-company page -->
+            <xpath expr="//page[@name='tally_connector']" position="replace">
+                <page name="tally_connector" string="Tally Integration" groups="account.group_account_invoice">
+                    <group>
+                        <group string="Tally Company Routing">
+                            <field name="tally_company_id" 
+                                   placeholder="Select target Tally Company..."
+                                   options="{'no_create_edit': True}"/>
+                        </group>
+                        <group string="Tally Sync Status">
+                            <field name="tally_guid" readonly="1"/>
+                            <field name="tally_last_sync" readonly="1"/>
+                        </group>
+                    </group>
+                    <div class="mt16">
+                        <button name="action_test_tally_connection" 
+                                string="🔌 Test Connection" 
+                                type="object" 
+                                class="btn-primary"/>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner Search View: Add group by / filter for Tally Company -->
+    <record id="view_res_partner_filter_tally_multi_inherit" model="ir.ui.view">
+        <field name="name">res.partner.select.tally.multi.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="tally_company_id"/>
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter string="Tally Company" name="group_by_tally_company" context="{'group_by': 'tally_company_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

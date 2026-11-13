@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tally_sync_log_list" model="ir.ui.view">
+        <field name="name">tally.sync.log.list</field>
+        <field name="model">tally.sync.log</field>
+        <field name="arch" type="xml">
+            <list string="Tally Sync Logs"
+                  decoration-success="status == 'success'"
+                  decoration-danger="status == 'failed'"
+                  decoration-muted="status == 'skipped'"
+                  default_order="sync_date desc">
+                <field name="sync_date" string="Date/Time"/>
+                <field name="move_name" string="Document"/>
+                <field name="move_id" string="Invoice/Bill" optional="show"/>
+                <field name="partner_id" string="Partner" optional="show"/>
+                <field name="status" string="Status" widget="badge"
+                       decoration-success="status == 'success'"
+                       decoration-danger="status == 'failed'"
+                       decoration-warning="status == 'skipped'"/>
+                <field name="tally_guid" string="Tally GUID" optional="show"/>
+                <field name="tally_server_url" string="Server URL" optional="hide"/>
+                <field name="error_message" string="Error" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tally_sync_log_form" model="ir.ui.view">
+        <field name="name">tally.sync.log.form</field>
+        <field name="model">tally.sync.log</field>
+        <field name="arch" type="xml">
+            <form string="Tally Sync Log" create="false" edit="false">
+                <header>
+                    <button string="Retry Sync" name="action_retry_sync"
+                            type="object"
+                            class="btn-primary"
+                            invisible="status == 'success'"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="success,failed,skipped"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="move_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Document">
+                            <field name="move_id" readonly="1" invisible="not move_id"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="sync_date" readonly="1"/>
+                        </group>
+                        <group string="Tally Result">
+                            <field name="status" readonly="1" widget="badge"
+                                   decoration-success="status == 'success'"
+                                   decoration-danger="status == 'failed'"
+                                   decoration-warning="status == 'skipped'"/>
+                            <field name="tally_guid" readonly="1"/>
+                            <field name="tally_server_url" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Error / Notes" invisible="not error_message">
+                        <field name="error_message" nolabel="1" widget="text" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Request XML (Sent to Tally)">
+                            <field name="request_xml" nolabel="1" widget="text" readonly="1"/>
+                        </page>
+                        <page string="Response XML (Received from Tally)">
+                            <field name="response_xml" nolabel="1" widget="text" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tally_sync_log" model="ir.actions.act_window">
+        <field name="name">Tally Sync Logs</field>
+        <field name="res_model">tally.sync.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

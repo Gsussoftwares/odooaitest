@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="prompt_mail_composer" model="gsus.ai.default.prompt">
+        <field name="name">Mail/Note Composer</field>
+        <field name="action">Write an email</field>
+        <field name="target_component">composer</field>
+        <field name="sequence">10</field>
+        <field name="description">Draft a polite, context-aware email or internal note based on the conversation history and customer record.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_record_html_fields" model="gsus.ai.default.prompt">
+        <field name="name">Record HTML Fields</field>
+        <field name="action">Write in an HTML field</field>
+        <field name="target_component">html</field>
+        <field name="sequence">20</field>
+        <field name="description">Generate rich-text content, product descriptions, or terms and conditions directly inside HTML fields.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_text_selector" model="gsus.ai.default.prompt">
+        <field name="name">Text Selector</field>
+        <field name="action">Rewrite content</field>
+        <field name="target_component">text</field>
+        <field name="sequence">30</field>
+        <field name="description">Polish highlighted text, improve tone, fix spelling and grammar, or summarize text passages.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_chatter_helper" model="gsus.ai.default.prompt">
+        <field name="name">Chatter Helper</field>
+        <field name="action">Get help on a record</field>
+        <field name="target_component">chatter</field>
+        <field name="sequence">40</field>
+        <field name="description">Inspect this specific record and its chatter timeline, providing a succinct executive summary and next steps.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_file_viewer_helper" model="gsus.ai.default.prompt">
+        <field name="name">File Viewer Helper</field>
+        <field name="action">Get help on a file attachment</field>
+        <field name="target_component">file_viewer</field>
+        <field name="sequence">50</field>
+        <field name="description">Answer user questions about the open PDF, invoice, receipt, or spreadsheet attachment.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_mail_template_evaluator" model="gsus.ai.default.prompt">
+        <field name="name">Mail Template Prompt Evaluator</field>
+        <field name="action">Convert a prompt in an email</field>
+        <field name="target_component">composer</field>
+        <field name="sequence">60</field>
+        <field name="description">Transform email templates dynamically using customer variables and historical order items.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_ask_ai" model="gsus.ai.default.prompt">
+        <field name="name">Ask AI</field>
+        <field name="action">Ask AI for help</field>
+        <field name="target_component">general</field>
+        <field name="sequence">70</field>
+        <field name="description">Open the AI conversational assistant to ask open-ended questions about your Odoo ERP system.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_voice_transcription" model="gsus.ai.default.prompt">
+        <field name="name">Summarize Voice Transcription</field>
+        <field name="action">Summary Buttons for Voice Transcription Component</field>
+        <field name="target_component">voice</field>
+        <field name="sequence">80</field>
+        <field name="description">Summarize transcribed audio recordings into bullet points, meeting minutes, and action items.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_media_manager" model="gsus.ai.default.prompt">
+        <field name="name">Media Manager</field>
+        <field name="action">Generate images inside the media manager</field>
+        <field name="target_component">media</field>
+        <field name="sequence">90</field>
+        <field name="description">Generate creative media, illustrations, and banners for your documents.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_product_media_manager" model="gsus.ai.default.prompt">
+        <field name="name">Product Media Manager</field>
+        <field name="action">Generate images inside the media manager</field>
+        <field name="target_component">media</field>
+        <field name="sequence">100</field>
+        <field name="description">Generate high quality product images and e-commerce visual assets.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_product_chatter_helper" model="gsus.ai.default.prompt">
+        <field name="name">Product Chatter Helper</field>
+        <field name="action">Get help on a record</field>
+        <field name="target_component">chatter</field>
+        <field name="sequence">110</field>
+        <field name="description">Summarize product stock levels, suppliers, and recent sales directly from product chatter.</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_product_variant_media_manager" model="gsus.ai.default.prompt">
+        <field name="name">Product Variant Media Manager</field>
+        <field name="action">Generate images inside the media manager</field>
+        <field name="target_component">media</field>
+        <field name="sequence">120</field>
+        <field name="description">Generate product variant visuals tailored to attributes (e.g. colors, sizes).</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="prompt_product_variant_chatter_helper" model="gsus.ai.default.prompt">
+        <field name="name">Product Variant Chatter Helper</field>
+        <field name="action">Get help on a record</field>
+        <field name="target_component">chatter</field>
+        <field name="sequence">130</field>
+        <field name="description">Inspect stock, pricing, and supplier leads for a specific product variant.</field>
+        <field name="is_active">True</field>
+    </record>
+</odoo>

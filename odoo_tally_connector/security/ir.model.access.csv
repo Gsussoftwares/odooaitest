@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tally_ledger_map_manager,tally.ledger.map manager,model_tally_ledger_map,account.group_account_manager,1,1,1,1
+access_tally_ledger_map_user,tally.ledger.map user,model_tally_ledger_map,account.group_account_user,1,0,0,0
+access_tally_voucher_map_manager,tally.voucher.map manager,model_tally_voucher_map,account.group_account_manager,1,1,1,1
+access_tally_voucher_map_user,tally.voucher.map user,model_tally_voucher_map,account.group_account_user,1,0,0,0
+access_tally_uom_map_manager,tally.uom.map manager,model_tally_uom_map,account.group_account_manager,1,1,1,1
+access_tally_uom_map_user,tally.uom.map user,model_tally_uom_map,account.group_account_user,1,0,0,0
+access_tally_product_category_map_manager,tally.product.category.map manager,model_tally_product_category_map,account.group_account_manager,1,1,1,1
+access_tally_product_category_map_user,tally.product.category.map user,model_tally_product_category_map,account.group_account_user,1,0,0,0
+access_tally_hsn_description_map_manager,tally.hsn.description.map manager,model_tally_hsn_description_map,account.group_account_manager,1,1,1,1
+access_tally_hsn_description_map_user,tally.hsn.description.map user,model_tally_hsn_description_map,account.group_account_user,1,0,0,0
+access_tally_sync_log_manager,tally.sync.log manager,model_tally_sync_log,account.group_account_manager,1,1,1,1
+access_tally_sync_log_user,tally.sync.log user,model_tally_sync_log,account.group_account_user,1,0,0,0
+access_tally_gst_sync_log_manager,tally.gst.sync.log manager,model_tally_gst_sync_log,account.group_account_manager,1,1,1,1
+access_tally_gst_sync_log_user,tally.gst.sync.log user,model_tally_gst_sync_log,account.group_account_user,1,0,0,0
+access_tally_test_connection_manager,tally.test.connection manager,model_tally_test_connection,account.group_account_manager,1,1,1,1
+access_tally_master_sync_manager,tally.master.sync manager,model_tally_master_sync,account.group_account_manager,1,1,1,1

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="gsus_ai.SystrayItem">
+        <button class="o_nav_entry o_gsus_ai_systray_btn"
+                t-on-click="() => this.onClickOpenAI()"
+                title="AI Assistant"
+                aria-label="AI Assistant">
+            <img class="o_gsus_ai_systray_icon"
+                 src="/gsus_ai/static/description/icon_3d.png"
+                 alt="AI"/>
+        </button>
+    </t>
+</templates>
+
+

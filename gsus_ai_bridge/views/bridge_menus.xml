@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bridge Menu Entry under General Settings / Technical -->
+    <menuitem id="menu_gsus_ai_bridge_root"
+              name="GSUS AI Bridge"
+              parent="base.menu_custom"
+              sequence="85"/>
+
+    <menuitem id="menu_gsus_ai_bridge_providers"
+              name="AI Providers &amp; Credentials"
+              parent="menu_gsus_ai_bridge_root"
+              action="action_gsus_ai_provider"
+              sequence="10"/>
+</odoo>

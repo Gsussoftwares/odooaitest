@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tally_master_sync_form" model="ir.ui.view">
+        <field name="name">tally.master.sync.form</field>
+        <field name="model">tally.master.sync</field>
+        <field name="arch" type="xml">
+            <form string="Bulk Master Sync">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle"/> 
+                        Each line in your Customers/Vendors list can be synced as its <b>own</b> party in Tally
+                        (ledger name = partner display name, e.g. “Company, Contact”). Ensure invoice/bill partners
+                        match if you rely on the same names in vouchers. Configure Settings → Tally Connector first.
+                    </div>
+                    <group>
+                        <group string="Customers &amp; Vendors">
+                            <label for="partner_count" string="Partners (one ledger per row)"/>
+                            <div class="o_row">
+                                <field name="partner_count"/>
+                                <button name="action_sync_all_customers" 
+                                        string="Sync All Partners" 
+                                        type="object" 
+                                        class="btn-primary"
+                                        confirm="Create/update one Tally party ledger for each listed partner row? This may take a few minutes."/>
+                            </div>
+                        </group>
+                        <group string="Products">
+                            <label for="product_count" string="Goods (Tally stock items)"/>
+                            <div class="o_row">
+                                <field name="product_count"/>
+                                <button name="action_sync_all_products" 
+                                        string="Sync All Products" 
+                                        type="object" 
+                                        class="btn-primary"
+                                        confirm="Sync all active Goods products to Tally? (Services/combos are skipped.)"/>
+                            </div>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tally_master_sync" model="ir.actions.act_window">
+        <field name="name">Bulk Master Sync</field>
+        <field name="res_model">tally.master.sync</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

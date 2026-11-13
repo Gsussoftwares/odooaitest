@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Default Prompt List View -->
+    <record id="view_gsus_ai_default_prompt_tree" model="ir.ui.view">
+        <field name="name">gsus.ai.default.prompt.list</field>
+        <field name="model">gsus.ai.default.prompt</field>
+        <field name="arch" type="xml">
+            <list string="Default Prompts" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name" string="Name"/>
+                <field name="action" string="Action"/>
+                <field name="agent_id" string="Agent"/>
+                <field name="target_component" widget="badge"/>
+                <field name="is_active" string="Active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Default Prompt Form View -->
+    <record id="view_gsus_ai_default_prompt_form" model="ir.ui.view">
+        <field name="name">gsus.ai.default.prompt.form</field>
+        <field name="model">gsus.ai.default.prompt</field>
+        <field name="arch" type="xml">
+            <form string="Contextual Default Prompt">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Chatter Helper, Mail/Note Composer..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="prompt_main" string="Configuration">
+                            <field name="action"/>
+                            <field name="agent_id"/>
+                            <field name="target_component"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Prompt Instructions" name="instructions">
+                            <field name="description" placeholder="Instructions or prompt template to apply when this trigger is invoked..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Default Prompt Search View -->
+    <record id="view_gsus_ai_default_prompt_search" model="ir.ui.view">
+        <field name="name">gsus.ai.default.prompt.search</field>
+        <field name="model">gsus.ai.default.prompt</field>
+        <field name="arch" type="xml">
+            <search string="Search Default Prompts">
+                <field name="name"/>
+                <field name="action"/>
+                <field name="agent_id"/>
+                <field name="target_component"/>
+                <filter name="active" string="Active" domain="[('is_active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Default Prompt Window Action -->
+    <record id="action_gsus_ai_default_prompt" model="ir.actions.act_window">
+        <field name="name">Default Prompts</field>
+        <field name="res_model">gsus.ai.default.prompt</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_gsus_ai_default_prompt_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Manage contextual AI prompt actions embedded across Odoo (Chatter Helper, Mail Composer, HTML fields).
+            </p>
+        </field>
+    </record>
+</odoo>

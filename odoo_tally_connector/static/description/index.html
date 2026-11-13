@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odoo 19 Tally Prime Connector | Direct XML Integration</title>
+    <style>
+        :root {
+            --primary: #0B2545;
+            --primary-light: #134074;
+            --accent: #00A896;
+            --accent-light: #02C39A;
+            --warning: #F4A261;
+            --danger: #E76F51;
+            --dark: #1E293B;
+            --light: #F8FAFC;
+            --gray: #64748B;
+            --border: #E2E8F0;
+            --card-shadow: 0 10px 25px -5px rgba(11, 37, 69, 0.08), 0 8px 10px -6px rgba(11, 37, 69, 0.04);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--dark);
+            background-color: #FFFFFF;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .badge-pill {
+            display: inline-block;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 50px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .badge-primary { background: #EEF2F6; color: var(--primary-light); border: 1px solid #CBD5E1; }
+        .badge-accent { background: #E6FFFA; color: #0D9488; border: 1px solid #99F6E4; }
+        .badge-warning { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: #FFFFFF;
+            border-radius: 16px;
+            padding: 50px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 30px -10px rgba(11, 37, 69, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            line-height: 1.2;
+            color: #FFFFFF;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+            color: #E2E8F0;
+            max-width: 780px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 50px;
+        }
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--gray);
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .feature-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -5px rgba(11, 37, 69, 0.12);
+        }
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 15px;
+            display: inline-block;
+            background: #F1F5F9;
+            width: 54px;
+            height: 54px;
+            line-height: 54px;
+            text-align: center;
+            border-radius: 12px;
+        }
+        .feature-heading {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .feature-text {
+            color: var(--gray);
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+        .screenshot-container {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 35px;
+        }
+        .screenshot-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #F1F5F9;
+            display: block;
+        }
+        .screenshot-caption {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-top: 12px;
+            text-align: center;
+        }
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: #FFFFFF;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .table-custom th {
+            background: #F8FAFC;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            font-size: 14px;
+        }
+        .table-custom td {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border);
+            color: var(--dark);
+            font-size: 14px;
+        }
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+        .alert-box {
+            padding: 18px 22px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 14.5px;
+        }
+        .alert-info {
+            background-color: #F0FDF4;
+            border-left: 4px solid var(--accent);
+            color: #166534;
+        }
+        .alert-warning {
+            background-color: #FFFBEB;
+            border-left: 4px solid var(--warning);
+            color: #92400E;
+        }
+        .workflow-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        .step-number {
+            background: var(--primary);
+            color: #FFFFFF;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 36px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-right: 18px;
+            font-size: 16px;
+        }
+        .step-content {
+            flex-grow: 1;
+        }
+        .step-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .step-text {
+            color: var(--gray);
+            font-size: 14px;
+            margin: 0;
+        }
+        .faq-item {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin-bottom: 15px;
+            background: #FFFFFF;
+        }
+        .faq-q {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .faq-a {
+            color: var(--gray);
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+        .footer-banner {
+            background: linear-gradient(135deg, #1E293B 0%, var(--primary) 100%);
+            color: #FFFFFF;
+            border-radius: 12px;
+            padding: 35px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .footer-banner h3 {
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .footer-banner p {
+            color: #CBD5E1;
+            font-size: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HERO SECTION -->
+    <div class="hero-section">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <span class="badge-pill badge-accent">⚡ Direct XML Integration</span>
+            <span class="badge-pill badge-primary">Odoo 19 Community &amp; Enterprise</span>
+            <span class="badge-pill badge-warning">Zero Middleware / Cloud Brokers</span>
+            <span class="badge-pill badge-primary">Port 9000 HTTP</span>
+        </div>
+        <h1 class="hero-title">Odoo 19 Tally Prime Connector</h1>
+        <p class="hero-subtitle">
+            Seamlessly synchronize Customer Invoices, Vendor Bills, Credit/Debit Notes, and Payments directly to Tally Prime using Tally's native HTTP XML interface. Built for precision accounting compliance, sign integrity, and audit transparency.
+        </p>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <div style="background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 8px;">
+                <div style="font-size: 20px; font-weight: 800;">100% Direct</div>
+                <div style="font-size: 12px; color: #CBD5E1;">No 3rd-Party APIs</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 8px;">
+                <div style="font-size: 20px; font-weight: 800;">4-Stage Smart Sync</div>
+                <div style="font-size: 12px; color: #CBD5E1;">Zero Duplicate Drops</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 8px;">
+                <div style="font-size: 20px; font-weight: 800;">GST &amp; IRN Ready</div>
+                <div style="font-size: 12px; color: #CBD5E1;">E-Invoice &amp; E-Way Bill</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 8px;">
+                <div style="font-size: 20px; font-weight: 800;">Multi-Company Ready</div>
+                <div style="font-size: 12px; color: #CBD5E1;">Scalable Architecture</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARCHITECTURE DIAGRAM -->
+    <div class="section-header">
+        <h2 class="section-title">End-to-End Direct Architecture</h2>
+        <p class="section-subtitle">
+            Direct socket-to-socket communication between Odoo server and Tally Prime XML HTTP Server without recurring cloud subscriptions or middleware.
+        </p>
+    </div>
+    <div class="screenshot-container">
+        <img src="overview.png" alt="Odoo 19 to Tally Prime Architecture Diagram" class="screenshot-img">
+        <div class="screenshot-caption">Figure 1: Architectural Data Flow — Direct UTF-16 XML Transmission &amp; Real-time Response Parsing</div>
+    </div>
+
+    <!-- KEY FEATURES GRID -->
+    <div class="section-header">
+        <h2 class="section-title">Enterprise Integration Features</h2>
+        <p class="section-subtitle">Designed by senior accounting architects to guarantee mathematical balance, ledger safety, and complete regulatory compliance.</p>
+    </div>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔌</div>
+            <div class="feature-heading">Direct XML Engine</div>
+            <div class="feature-text">
+                Connects directly to Tally Prime's native XML Server on Port 9000 (or custom LAN port). Generates strict UTF-16 XML with Little-Endian Byte Order Mark (BOM) ensuring zero parse errors.
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚖️</div>
+            <div class="feature-heading">Strict Sign Convention</div>
+            <div class="feature-text">
+                Implements Tally's exact inverted sign rules: Debit entries are negative (<code>-AMOUNT</code> with <code>ISDEEMEDPOSITIVE=Yes</code>), and Credit entries are positive (<code>+AMOUNT</code>). Eliminates ledger imbalance errors.
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <div class="feature-heading">4-Stage Resilient Sync</div>
+            <div class="feature-text">
+                Smart recovery pipeline handles Tally duplicates and edge cases: Stage 1 (Standard Create) → Stage 2 (Alter Upsert) → Stage 3 (Minimal XML Payload) → Stage 4 (Pure Accounting Journal Fallback).
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📦</div>
+            <div class="feature-heading">Master Pre-Flight Checks</div>
+            <div class="feature-text">
+                Automatically verifies and creates missing Party Ledgers (Sundry Debtors/Creditors), Stock Groups, Stock Items, and Unit of Measure (UoM) masters in Tally before posting vouchers.
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🧾</div>
+            <div class="feature-heading">GST &amp; E-Way Bill Integration</div>
+            <div class="feature-text">
+                Transfers GSTIN, State Code, Place of Supply, IRN, Acknowledgement Number &amp; Date, E-Way Bill Number, and transporter vehicle details directly into statutory Tally fields.
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <div class="feature-heading">Complete Audit Trail</div>
+            <div class="feature-text">
+                Every transmission records full Request XML and Response XML, Tally GUID / Voucher ID, status badges, timestamps, and diagnostic line-by-line error messages.
+            </div>
+        </div>
+    </div>
+
+    <!-- LIVE UI SCREENSHOTS -->
+    <div class="section-header">
+        <h2 class="section-title">Real Application Screenshots</h2>
+        <p class="section-subtitle">Captured from real Odoo 19 Community runtime environments demonstrating genuine production views.</p>
+    </div>
+
+    <!-- SCREENSHOT 1: INVOICE FORM -->
+    <div class="screenshot-container">
+        <img src="sync_workflow.png" alt="Odoo 19 Customer Invoice Tally Integration Screen" class="screenshot-img">
+        <div class="screenshot-caption">Figure 2: Customer Invoice with Unified "Tally Integration" Tab, Status Badge (Synced), and Action Buttons</div>
+    </div>
+
+    <!-- SCREENSHOT 2: LEDGER MAPPING -->
+    <div class="screenshot-container">
+        <img src="ledger_mapping.png" alt="Odoo 19 Tally Ledger Mapping List" class="screenshot-img">
+        <div class="screenshot-caption">Figure 3: GL Account to Tally Ledger Mapping Table with Auto-detected Groups &amp; Party Flags</div>
+    </div>
+
+    <!-- SCREENSHOT 3: VOUCHER MAPPING -->
+    <div class="screenshot-container">
+        <img src="voucher_mapping.png" alt="Odoo 19 Tally Voucher Type Mapping" class="screenshot-img">
+        <div class="screenshot-caption">Figure 4: Voucher Type Mapping with Exact Persisted View Configurations (Invoice vs. Accounting Views)</div>
+    </div>
+
+    <!-- SCREENSHOT 4: SYNC LOGS -->
+    <div class="screenshot-container">
+        <img src="sync_logs.png" alt="Odoo 19 Tally Sync Audit Logs" class="screenshot-img">
+        <div class="screenshot-caption">Figure 5: Detailed Audit Log List with Date/Time, Document Name, Status Badges, and Tally GUIDs</div>
+    </div>
+
+    <!-- SCREENSHOT 5: MULTI-COMPANY -->
+    <div class="screenshot-container">
+        <img src="multi_company.png" alt="Odoo 19 Tally Multi-Company Connection List" class="screenshot-img">
+        <div class="screenshot-caption">Figure 6: Multi-Company Extension — Manage Multiple Tally Endpoints with Live Connection Badges</div>
+    </div>
+
+    <!-- SCREENSHOT 6: CONNECTION FORM -->
+    <div class="screenshot-container">
+        <img src="connection_settings.png" alt="Odoo 19 Tally Company Connection Settings Form" class="screenshot-img">
+        <div class="screenshot-caption">Figure 7: Tally Company Configuration with "Connected" Ribbon, URL Settings, and Assigned Partners List</div>
+    </div>
+
+    <!-- SCREENSHOT 7: MASTER SYNC WIZARD -->
+    <div class="screenshot-container">
+        <img src="master_sync.png" alt="Odoo 19 Bulk Master Synchronization Wizard" class="screenshot-img">
+        <div class="screenshot-caption">Figure 8: Bulk Master Synchronization Wizard for High-Speed Batch Export of Customers and Products</div>
+    </div>
+
+    <!-- TECHNICAL SPECIFICATIONS -->
+    <div class="section-header">
+        <h2 class="section-title">Technical Specifications &amp; Compatibility</h2>
+        <p class="section-subtitle">Verified parameters for enterprise deployment.</p>
+    </div>
+    <table class="table-custom">
+        <thead>
+            <tr>
+                <th style="width: 30%;">Specification</th>
+                <th style="width: 70%;">Details &amp; Supported Parameters</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Odoo Compatibility</strong></td>
+                <td>Odoo 19.0 Community Edition &amp; Odoo 19.0 Enterprise Edition</td>
+            </tr>
+            <tr>
+                <td><strong>Tally Prime Compatibility</strong></td>
+                <td>Tally Prime Release 2.x, 3.x, 4.x, 5.x (Standard &amp; Gold editions with XML HTTP enabled)</td>
+            </tr>
+            <tr>
+                <td><strong>Protocol &amp; Port</strong></td>
+                <td>Direct HTTP POST, UTF-16 Little Endian BOM XML Envelope on Port 9000 (configurable)</td>
+            </tr>
+            <tr>
+                <td><strong>Supported Document Types</strong></td>
+                <td>Customer Invoices (Sales), Vendor Bills (Purchase), Customer Credit Notes, Vendor Debit Notes, Receipts, Payments, and Manual Journal Entries</td>
+            </tr>
+            <tr>
+                <td><strong>Python Dependencies</strong></td>
+                <td><code>requests</code> (standard HTTP library included in Odoo Python environment)</td>
+            </tr>
+            <tr>
+                <td><strong>Odoo Dependencies</strong></td>
+                <td><code>account</code>, <code>base_setup</code>, <code>uom</code></td>
+            </tr>
+            <tr>
+                <td><strong>Security &amp; Permissions</strong></td>
+                <td>Full RBAC integration: Invoicing User (Read Logs &amp; Status), Accounting Manager (Full Mapping &amp; Configuration CRUD)</td>
+            </tr>
+            <tr>
+                <td><strong>License</strong></td>
+                <td>LGPL-3</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- CONFIGURATION & USAGE WORKFLOW -->
+    <div class="section-header">
+        <h2 class="section-title">Quick 4-Step Setup Workflow</h2>
+        <p class="section-subtitle">Get your Odoo to Tally synchronization running in less than 15 minutes.</p>
+    </div>
+    <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: var(--card-shadow); margin-bottom: 40px;">
+        <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <div class="step-title">Enable Tally Prime XML Server</div>
+                <p class="step-text">In Tally Prime, press <strong>F1 (Help) → Settings → Connectivity → Client/Server configuration</strong>. Set <em>Enable XML Server = Yes</em> on Port 9000.</p>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <div class="step-title">Configure Connection in Odoo</div>
+                <p class="step-text">Navigate to <strong>Accounting → Settings → Tally Prime Connector</strong>. Enter your Tally Server URL (<code>http://localhost:9000</code> or LAN IP) and exact Tally Company Name. Click <strong>Test Connection</strong>.</p>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <div class="step-title">Configure Ledger &amp; Voucher Mappings</div>
+                <p class="step-text">Open <strong>Customers → Tally Connector → Mappings → Ledger Mapping</strong>. Map your Sales, Purchase, Tax, and Party accounts to their corresponding Tally ledgers.</p>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <div class="step-title">Post &amp; Synchronize Transactions</div>
+                <p class="step-text">Post an invoice. With automatic sync enabled, transactions flow straight into Tally. View status badges on invoice headers and inspect full XML in <strong>Sync Logs</strong>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXTENSION SPOTLIGHT -->
+    <div style="background: linear-gradient(135deg, #0F3057 0%, #00587A 100%); color: #FFFFFF; border-radius: 12px; padding: 35px; margin-bottom: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div style="max-width: 700px;">
+                <span class="badge-pill badge-warning">Optional Extension</span>
+                <h3 style="font-size: 24px; margin-top: 10px; margin-bottom: 10px; color: #FFFFFF;">Need Multi-Company Routing?</h3>
+                <p style="color: #E2E8F0; font-size: 14.5px; margin: 0; line-height: 1.6;">
+                    Install our companion addon <strong>Tally Multi-Company Connector (odoo_tally_multi_company)</strong> to connect multiple Tally company instances simultaneously on different ports or remote servers, with automatic partner-to-company destination routing.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ SECTION -->
+    <div class="section-header">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Real answers to common operational questions.</p>
+    </div>
+    <div class="faq-item">
+        <div class="faq-q">Does this require any Tally TDL customization or third-party cloud service?</div>
+        <div class="faq-a">No. The connector uses Tally Prime's built-in standard HTTP XML interface on Port 9000. It requires zero custom TDL scripts, no third-party cloud subscriptions, and no intermediate agent executables.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-q">Can Odoo and Tally Prime run on different machines?</div>
+        <div class="faq-a">Yes. While <code>http://localhost:9000</code> is used when both run on the same computer, you can configure any valid LAN IP address (e.g. <code>http://192.168.1.100:9000</code>) or secure VPN tunnel endpoint in the settings.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-q">How does the connector prevent duplicate entries in Tally?</div>
+        <div class="faq-a">Each voucher XML envelope embeds the Odoo invoice reference into Tally's unique <code>REMOTEID</code> attribute. Furthermore, Odoo stores Tally's generated internal GUID and skips re-transmitting already synced documents unless manually forced by an authorized accountant.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-q">How are debit and credit signs handled?</div>
+        <div class="faq-a">The module strictly adheres to Tally's internal XML sign convention: Asset and Expense debits are encoded as negative numbers with <code>ISDEEMEDPOSITIVE=Yes</code>, while Liability and Income credits are positive with <code>ISDEEMEDPOSITIVE=No</code>.</div>
+    </div>
+
+    <!-- FOOTER / SUPPORT -->
+    <div class="footer-banner">
+        <h3>Enterprise-Grade Quality Guarantee</h3>
+        <p>
+            Fully tested and validated on Odoo 19 Community Edition. Built for performance, security, and strict accounting compliance.
+        </p>
+    </div>
+
+</div>
+
+</body>
+</html>

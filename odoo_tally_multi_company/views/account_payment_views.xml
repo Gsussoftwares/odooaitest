@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Multi-Company Payment Form Extension -->
+    <record id="view_account_payment_form_tally_multi_company" model="ir.ui.view">
+        <field name="name">account.payment.form.tally.multi.company</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="odoo_tally_connector.view_account_payment_form_tally_inherit"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <!-- Ensure Header Sync Button is Prominently Visible -->
+            <xpath expr="//button[@name='action_sync_to_tally']" position="replace">
+                <button name="action_sync_to_tally"
+                        string="Sync to Tally Now"
+                        type="object"
+                        class="btn-primary"
+                        invisible="state not in ('in_process', 'paid')"/>
+            </xpath>
+
+            <!-- Always-Visible Tally Logs Stat Button -->
+            <xpath expr="//button[@name='action_view_tally_logs']" position="replace">
+                <button name="action_view_tally_logs"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-exchange">
+                    <field name="tally_sync_log_count" widget="statinfo" string="Tally Logs"/>
+                </button>
+            </xpath>
+
+            <!-- Replace Base Tally Sync Page with Unified Tally Integration Tab -->
+            <xpath expr="//page[@name='tally_payment_sync_page']" position="replace">
+                <page string="Tally Integration" name="tally_multi_company_payment_page">
+                    <group>
+                        <group string="Tally Destination">
+                            <field name="tally_company_id" 
+                                   options="{'no_create': True, 'no_open': False}"
+                                   placeholder="Derived from Partner or select manually..."/>
+                            <div>
+                                <button name="action_test_tally_connection"
+                                        type="object"
+                                        string="🔌 Test Connection"
+                                        class="btn-sm btn-outline-secondary mt-1"/>
+                            </div>
+                        </group>
+                        <group string="Integration Status">
+                            <field name="tally_sync_status" 
+                                   widget="badge" 
+                                   decoration-success="tally_sync_status == 'synced'" 
+                                   decoration-danger="tally_sync_status == 'failed'" 
+                                   decoration-warning="tally_sync_status in ('pending', 'skipped')"/>
+                            <field name="tally_last_sync" readonly="1" invisible="not tally_last_sync"/>
+                            <field name="tally_guid" readonly="1" invisible="not tally_guid"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

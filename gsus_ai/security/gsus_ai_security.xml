@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- GSUS AI User Group -->
+    <record id="group_gsus_ai_user" model="res.groups">
+        <field name="name">AI User</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- GSUS AI Manager Group -->
+    <record id="group_gsus_ai_manager" model="res.groups">
+        <field name="name">AI Administrator</field>
+        <field name="implied_ids" eval="[(4, ref('group_gsus_ai_user'))]"/>
+    </record>
+
+    <!-- Add AI Manager to base.group_system -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('gsus_ai.group_gsus_ai_manager'))]"/>
+    </record>
+</odoo>

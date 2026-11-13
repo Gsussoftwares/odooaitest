@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_bank_statement_ai" model="ir.actions.report">
+        <field name="name">Bank Statement Summary</field>
+        <field name="model">gsus.bank.statement.ai</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">gsus_bank_ai.report_statement_ai_template</field>
+        <field name="binding_model_id" ref="model_gsus_bank_statement_ai"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_statement_ai_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px;">
+                        <div class="row mb-4 pb-2" style="border-bottom: 2px solid #714B67;">
+                            <div class="col-8">
+                                <h3 style="color: #714B67; margin: 0; font-weight: bold;">
+                                    <t t-esc="doc.bank_name or 'Bank'"/> Statement Audit Report
+                                </h3>
+                                <p class="text-muted mb-0">
+                                    Statement: <strong><t t-esc="doc.name"/></strong> | Date: <t t-esc="doc.statement_date"/>
+                                </p>
+                            </div>
+                            <div class="col-4 text-end">
+                                <span class="badge" style="background-color: #714B67; color: #fff; padding: 6px 12px; font-size: 11px;">
+                                    <t t-esc="doc.state.upper()"/>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Balances Grid -->
+                        <div class="row mb-4">
+                            <div class="col-3 p-2" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
+                                <div class="text-muted" style="font-size: 9px; text-transform: uppercase;">Opening Balance</div>
+                                <div style="font-size: 14px; font-weight: bold;">₹ <t t-esc="'{:,.2f}'.format(doc.opening_balance)"/></div>
+                            </div>
+                            <div class="col-3 p-2" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
+                                <div class="text-muted" style="font-size: 9px; text-transform: uppercase;">Total Debits (Out)</div>
+                                <div style="font-size: 14px; font-weight: bold; color: #dc2626;">₹ <t t-esc="'{:,.2f}'.format(doc.total_debit)"/></div>
+                            </div>
+                            <div class="col-3 p-2" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
+                                <div class="text-muted" style="font-size: 9px; text-transform: uppercase;">Total Credits (In)</div>
+                                <div style="font-size: 14px; font-weight: bold; color: #16a34a;">₹ <t t-esc="'{:,.2f}'.format(doc.total_credit)"/></div>
+                            </div>
+                            <div class="col-3 p-2" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
+                                <div class="text-muted" style="font-size: 9px; text-transform: uppercase;">Closing Balance</div>
+                                <div style="font-size: 14px; font-weight: bold;">₹ <t t-esc="'{:,.2f}'.format(doc.closing_balance)"/></div>
+                            </div>
+                        </div>
+
+                        <!-- Transactions Table -->
+                        <table class="table table-sm table-striped" style="border: 1px solid #dee2e6; width: 100%;">
+                            <thead style="background-color: #714B67; color: #fff;">
+                                <tr>
+                                    <th style="padding: 6px; width: 70px;">Date</th>
+                                    <th style="padding: 6px; width: 50px;">Mode</th>
+                                    <th style="padding: 6px;">Narration</th>
+                                    <th style="padding: 6px; width: 120px;">Reference / UTR</th>
+                                    <th style="padding: 6px; text-align: right; width: 85px;">Debit (₹)</th>
+                                    <th style="padding: 6px; text-align: right; width: 85px;">Credit (₹)</th>
+                                    <th style="padding: 6px; width: 120px;">Assigned Contact</th>
+                                    <th style="padding: 6px; width: 120px;">Assigned Ledger</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.line_ids" t-as="l">
+                                    <tr style="border-bottom: 1px solid #eee;">
+                                        <td style="padding: 4px 6px;"><t t-esc="l.date"/></td>
+                                        <td style="padding: 4px 6px;"><span class="badge bg-light text-dark"><t t-esc="l.payment_mode.upper() if l.payment_mode else ''"/></span></td>
+                                        <td style="padding: 4px 6px;"><t t-esc="l.narration"/></td>
+                                        <td style="padding: 4px 6px; font-family: monospace; font-size: 9px;"><t t-esc="l.reference or ''"/></td>
+                                        <td style="padding: 4px 6px; text-align: right; color: #dc2626;"><t t-if="l.debit > 0">₹ <t t-esc="'{:,.2f}'.format(l.debit)"/></t></td>
+                                        <td style="padding: 4px 6px; text-align: right; color: #16a34a;"><t t-if="l.credit > 0">₹ <t t-esc="'{:,.2f}'.format(l.credit)"/></t></td>
+                                        <td style="padding: 4px 6px;"><t t-esc="l.partner_id.name if l.partner_id else '-'"/></td>
+                                        <td style="padding: 4px 6px;"><t t-esc="l.account_id.display_name if l.account_id else '-'"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

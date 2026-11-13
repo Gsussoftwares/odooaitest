@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sales & CRM Tools -->
+    <record id="tool_crm_search_leads" model="gsus.ai.tool">
+        <field name="name">Search CRM Leads &amp; Opportunities</field>
+        <field name="code">crm_search_leads</field>
+        <field name="domain_category">sales</field>
+        <field name="operation_type">read</field>
+        <field name="description">Search CRM leads and opportunities by customer or opportunity title.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "query": {"type": "string", "description": "Search keyword for lead or customer name"},
+    "limit": {"type": "integer", "description": "Maximum number of leads to return", "default": 5}
+  }
+}</field>
+    </record>
+
+    <record id="tool_crm_summarize_lead" model="gsus.ai.tool">
+        <field name="name">Summarize CRM Opportunity</field>
+        <field name="code">crm_summarize_lead</field>
+        <field name="domain_category">sales</field>
+        <field name="operation_type">read</field>
+        <field name="description">Retrieve detailed summary of a specific CRM lead including revenue, stage, salesperson, and description.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "lead_id": {"type": "integer", "description": "ID of the CRM lead to summarize"}
+  },
+  "required": ["lead_id"]
+}</field>
+    </record>
+
+    <record id="tool_crm_create_lead" model="gsus.ai.tool">
+        <field name="name">Create New CRM Lead</field>
+        <field name="code">crm_create_lead</field>
+        <field name="domain_category">sales</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Create a new CRM lead or opportunity with customer details and expected revenue.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "name": {"type": "string", "description": "Opportunity title or prospect inquiry"},
+    "partner_id": {"type": "integer", "description": "Optional customer partner ID"},
+    "expected_revenue": {"type": "number", "description": "Expected deal amount"},
+    "description": {"type": "string", "description": "Details or requirements"}
+  },
+  "required": ["name"]
+}</field>
+    </record>
+
+    <record id="tool_sale_search_orders" model="gsus.ai.tool">
+        <field name="name">Search Sales Orders &amp; Quotations</field>
+        <field name="code">sale_search_orders</field>
+        <field name="domain_category">sales</field>
+        <field name="operation_type">read</field>
+        <field name="description">Search sales orders and quotations by order number or customer name.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "query": {"type": "string", "description": "Customer name or SO reference (e.g. S00012)"},
+    "limit": {"type": "integer", "default": 5}
+  }
+}</field>
+    </record>
+
+    <record id="tool_sale_summarize_order" model="gsus.ai.tool">
+        <field name="name">Summarize Sales Order Lines</field>
+        <field name="code">sale_summarize_order</field>
+        <field name="domain_category">sales</field>
+        <field name="operation_type">read</field>
+        <field name="description">Retrieve line items, quantities, pricing, and total amounts for a specific sales order.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "order_id": {"type": "integer", "description": "Sales Order ID to inspect"}
+  },
+  "required": ["order_id"]
+}        </field>
+    </record>
+
+    <record id="tool_sale_create_order" model="gsus.ai.tool">
+        <field name="name">Create Sales Order / Quotation</field>
+        <field name="code">sale_create_order</field>
+        <field name="domain_category">sales</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Create a new draft sales order or quotation for a customer with product order lines.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "partner_name": {"type": "string", "description": "Customer name (e.g. Azure Interior, Deco Addict, or custom name)"},
+    "partner_id": {"type": "integer", "description": "Optional customer Partner ID if known"},
+    "lines": {
+      "type": "array",
+      "description": "List of products to add to quotation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_name": {"type": "string", "description": "Product name or reference keyword"},
+          "quantity": {"type": "number", "description": "Quantity to order", "default": 1},
+          "price_unit": {"type": "number", "description": "Optional custom unit price"}
+        },
+        "required": ["product_name"]
+      }
+    }
+  },
+  "required": ["partner_name"]
+}</field>
+    </record>
+
+    <!-- Accounting Tools -->
+    <record id="tool_account_check_partner_balance" model="gsus.ai.tool">
+        <field name="name">Check Customer / Vendor Balance</field>
+        <field name="code">account_check_partner_balance</field>
+        <field name="domain_category">finance</field>
+        <field name="operation_type">read</field>
+        <field name="description">Check outstanding receivable credit or payable debit for a specific partner.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "partner_id": {"type": "integer", "description": "Partner ID"}
+  },
+  "required": ["partner_id"]
+}</field>
+    </record>
+
+    <record id="tool_account_search_invoices" model="gsus.ai.tool">
+        <field name="name">Search Customer Invoices</field>
+        <field name="code">account_search_invoices</field>
+        <field name="domain_category">finance</field>
+        <field name="operation_type">read</field>
+        <field name="description">Search customer invoices by partner ID or payment state (not_paid, paid, in_payment).</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "partner_id": {"type": "integer", "description": "Optional partner ID filter"},
+    "payment_state": {"type": "string", "description": "e.g. not_paid, paid"},
+    "limit": {"type": "integer", "default": 5}
+  }
+}</field>
+    </record>
+
+    <!-- Purchase Tools -->
+    <record id="tool_purchase_search_orders" model="gsus.ai.tool">
+        <field name="name">Search Purchase Orders &amp; RFQs</field>
+        <field name="code">purchase_search_orders</field>
+        <field name="domain_category">purchase</field>
+        <field name="operation_type">read</field>
+        <field name="description">Search purchase orders, requests for quotation (RFQs), and vendor orders by vendor name or order reference (e.g. P00014).</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "query": {"type": "string", "description": "Vendor name or PO reference (e.g. P00012, Vicky)"},
+    "limit": {"type": "integer", "default": 5}
+  }
+}</field>
+    </record>
+
+    <record id="tool_purchase_create_order" model="gsus.ai.tool">
+        <field name="name">Create Purchase Order / RFQ</field>
+        <field name="code">purchase_create_order</field>
+        <field name="domain_category">purchase</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Create a new Purchase Order or Request for Quotation (RFQ) for a supplier/vendor with product lines, quantities, and UoM. If the purchase module is not installed, prompts the user to install it first.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "partner_name": {"type": "string", "description": "Vendor / Supplier name (e.g. Vicky, Azure Interior, Gemini Foods)"},
+    "partner_id": {"type": "integer", "description": "Optional vendor Partner ID if known"},
+    "lines": {
+      "type": "array",
+      "description": "List of products to purchase",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_name": {"type": "string", "description": "Product name (e.g. Tomato, Desk, Office Chair)"},
+          "product_id": {"type": "integer", "description": "Optional Product ID"},
+          "quantity": {"type": "number", "description": "Quantity to order (e.g. 20)"},
+          "uom_name": {"type": "string", "description": "Unit of Measure (e.g. kg, Units, Hours)"},
+          "price_unit": {"type": "number", "description": "Unit price (optional)"}
+        },
+        "required": ["quantity"]
+      }
+    },
+    "notes": {"type": "string", "description": "Optional terms, notes, or special instructions"}
+  },
+  "required": ["partner_name"]
+}</field>
+    </record>
+
+    <!-- Inventory Tools -->
+    <record id="tool_stock_check_availability" model="gsus.ai.tool">
+        <field name="name">Check Product Stock &amp; Inventory</field>
+        <field name="code">stock_check_availability</field>
+        <field name="domain_category">inventory</field>
+        <field name="operation_type">read</field>
+        <field name="description">Check on-hand quantity, forecasted virtual quantity, and unit price for products.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "product_name": {"type": "string", "description": "Product name or reference keyword"},
+    "limit": {"type": "integer", "default": 5}
+  }
+}</field>
+    </record>
+
+    <!-- Project Tools -->
+    <record id="tool_project_search_tasks" model="gsus.ai.tool">
+        <field name="name">Search Project Tasks</field>
+        <field name="code">project_search_tasks</field>
+        <field name="domain_category">project</field>
+        <field name="operation_type">read</field>
+        <field name="description">Search project tasks by task title or project ID.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "query": {"type": "string", "description": "Task name keyword"},
+    "project_id": {"type": "integer", "description": "Optional project filter"}
+  }
+}</field>
+    </record>
+
+    <!-- General Activity & Chatter Tools -->
+    <record id="tool_calendar_schedule_activity" model="gsus.ai.tool">
+        <field name="name">Schedule Next Activity / Todo</field>
+        <field name="code">calendar_schedule_activity</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Schedule an activity (call, reminder, follow-up) on any Odoo document.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "res_model": {"type": "string", "description": "Target model (e.g. crm.lead, sale.order, res.partner)"},
+    "res_id": {"type": "integer", "description": "Target record ID"},
+    "summary": {"type": "string", "description": "Activity title / summary"},
+    "note": {"type": "string", "description": "Details or agenda"},
+    "date_deadline": {"type": "string", "description": "Deadline YYYY-MM-DD"}
+  },
+  "required": ["res_model", "res_id", "summary"]
+}</field>
+    </record>
+
+    <record id="tool_chatter_post_message" model="gsus.ai.tool">
+        <field name="name">Post Note to Chatter</field>
+        <field name="code">chatter_post_message</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Post an internal note or message to a document chatter.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "res_model": {"type": "string", "description": "Target model name"},
+    "res_id": {"type": "integer", "description": "Target record ID"},
+    "body": {"type": "string", "description": "Message HTML or text content"}
+  },
+  "required": ["res_model", "res_id", "body"]
+}</field>
+    </record>
+
+    <!-- Universal Odoo ORM & Module Tools across All Installed Apps -->
+    <record id="tool_orm_inspect_model" model="gsus.ai.tool">
+        <field name="name">Universal Model Schema Inspector</field>
+        <field name="code">orm_inspect_model</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">read</field>
+        <field name="description">Inspect fields, data types, and relational requirements for ANY installed Odoo model (e.g. sale.order, account.move, stock.picking, purchase.order, crm.lead, hr.employee, project.task, etc.).</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "model": {"type": "string", "description": "Technical model name (e.g. sale.order, account.move, res.partner)"}
+  },
+  "required": ["model"]
+}</field>
+    </record>
+
+    <record id="tool_orm_search_read" model="gsus.ai.tool">
+        <field name="name">Universal Record Search &amp; Read</field>
+        <field name="code">orm_search_read</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">read</field>
+        <field name="description">Search and read records from ANY installed Odoo model with domain filters and field selection.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "model": {"type": "string", "description": "Technical model name (e.g. account.move, stock.picking, purchase.order, hr.employee)"},
+    "domain": {"type": "array", "description": "Odoo search domain list, e.g. [[\"state\", \"=\", \"draft\"]]", "items": {}},
+    "fields": {"type": "array", "description": "List of field names to retrieve", "items": {"type": "string"}},
+    "limit": {"type": "integer", "description": "Maximum number of records to return (default 10)", "default": 10},
+    "order": {"type": "string", "description": "SQL sort order, e.g. 'id desc'"}
+  },
+  "required": ["model"]
+}</field>
+    </record>
+
+    <record id="tool_orm_create_record" model="gsus.ai.tool">
+        <field name="name">Universal Record Creator</field>
+        <field name="code">orm_create_record</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Create a new record in ANY installed Odoo model (e.g. purchase order, invoice, contact, product, project task, warehouse transfer). Generates an action proposal requiring user confirmation.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "model": {"type": "string", "description": "Technical model name to create in (e.g. res.partner, purchase.order, project.task)"},
+    "values": {"type": "object", "description": "Dictionary of field values to set on creation"}
+  },
+  "required": ["model", "values"]
+}</field>
+    </record>
+
+    <record id="tool_orm_write_record" model="gsus.ai.tool">
+        <field name="name">Universal Record Updater</field>
+        <field name="code">orm_write_record</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Update fields on an existing record in ANY installed Odoo model. Generates an action proposal requiring user confirmation.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "model": {"type": "string", "description": "Technical model name"},
+    "id": {"type": "integer", "description": "ID of the record to update"},
+    "values": {"type": "object", "description": "Dictionary of fields to update"}
+  },
+  "required": ["model", "id", "values"]
+}</field>
+    </record>
+
+    <record id="tool_orm_unlink_record" model="gsus.ai.tool">
+        <field name="name">Universal Record Deleter</field>
+        <field name="code">orm_unlink_record</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Permanently delete a record from ANY installed Odoo model. Generates a strict action proposal requiring user approval.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "model": {"type": "string", "description": "Technical model name"},
+    "id": {"type": "integer", "description": "ID of the record to delete"}
+  },
+  "required": ["model", "id"]
+}</field>
+    </record>
+
+    <record id="tool_app_list_modules" model="gsus.ai.tool">
+        <field name="name">List Odoo Apps &amp; Modules</field>
+        <field name="code">app_list_modules</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">read</field>
+        <field name="description">List Odoo apps and modules with their current state (installed, uninstalled, to upgrade) and summary description.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "state": {"type": "string", "description": "Filter by state: 'installed', 'uninstalled', or 'to upgrade'"},
+    "query": {"type": "string", "description": "Search keyword for app or module name"},
+    "limit": {"type": "integer", "description": "Max modules to list", "default": 20}
+  }
+}</field>
+    </record>
+
+    <record id="tool_app_install_module" model="gsus.ai.tool">
+        <field name="name">Install Odoo App</field>
+        <field name="code">app_install_module</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Install an Odoo module or app by technical name (e.g. sale, purchase, crm, stock, project, hr). Requires admin approval.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "module_name": {"type": "string", "description": "Technical addon name to install"}
+  },
+  "required": ["module_name"]
+}</field>
+    </record>
+
+    <record id="tool_app_upgrade_module" model="gsus.ai.tool">
+        <field name="name">Upgrade Odoo App</field>
+        <field name="code">app_upgrade_module</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="description">Upgrade an installed Odoo app or module to reload code and views. Requires admin approval.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "module_name": {"type": "string", "description": "Technical addon name to upgrade"}
+  },
+  "required": ["module_name"]
+}</field>
+    </record>
+
+    <record id="tool_app_uninstall_module" model="gsus.ai.tool">
+        <field name="name">Uninstall Odoo App</field>
+        <field name="code">app_uninstall_module</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="use_in_ai" eval="True"/>
+        <field name="description">Uninstall an installed Odoo app or module. Requires admin approval.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "module_name": {"type": "string", "description": "Technical addon name to uninstall"}
+  },
+  "required": ["module_name"]
+}</field>
+    </record>
+
+    <record id="tool_automation_create_or_update" model="gsus.ai.tool">
+        <field name="name">Create or Update Automation</field>
+        <field name="code">automation_create_or_update</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="use_in_ai" eval="True"/>
+        <field name="description">Create and configure an automated business rule (base.automation) for actions triggered on record creation or updates.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "name": {"type": "string", "description": "Descriptive name of the automation rule"},
+    "model_name": {"type": "string", "description": "Target technical model (e.g. sale.order, crm.lead)"},
+    "trigger": {"type": "string", "enum": ["on_create", "on_write", "on_create_or_write"], "description": "When this automation should trigger"}
+  },
+  "required": ["name", "model_name"]
+}</field>
+    </record>
+
+    <record id="tool_accounting_describe_report" model="gsus.ai.tool">
+        <field name="name">Describe Accounting Report</field>
+        <field name="code">accounting_describe_report</field>
+        <field name="domain_category">finance</field>
+        <field name="operation_type">read</field>
+        <field name="requires_confirmation" eval="False"/>
+        <field name="use_in_ai" eval="True"/>
+        <field name="description">Summarize company financial report metrics, total revenue invoiced, and open receivable balance totals.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {}
+}</field>
+    </record>
+
+    <record id="tool_config_get_settings" model="gsus.ai.tool">
+        <field name="name">Inspect System Settings</field>
+        <field name="code">config_get_settings</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">read</field>
+        <field name="requires_confirmation" eval="False"/>
+        <field name="use_in_ai" eval="True"/>
+        <field name="description">Inspect current configuration settings across any installed Odoo app (Inventory, Sales, Purchase, Accounting, or custom modules). Returns whether settings like Storage Locations, Multi-Step Routes, Packages, Lots, Variants, etc. are enabled or disabled.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "setting_names": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "List of setting names or search keywords to check (e.g. ['storage_locations', 'packages', 'multi_step_routes', 'variants'])"
+    }
+  },
+  "required": ["setting_names"]
+}</field>
+    </record>
+
+    <record id="tool_config_set_settings" model="gsus.ai.tool">
+        <field name="name">Configure System Settings</field>
+        <field name="code">config_set_settings</field>
+        <field name="domain_category">general</field>
+        <field name="operation_type">mutate</field>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="use_in_ai" eval="True"/>
+        <field name="description">Enable or disable system configuration settings across any installed Odoo app (Inventory, Sales, Purchase, Accounting, or custom modules). Changes are confirmed by the user before being applied.</field>
+        <field name="json_schema_text">{
+  "type": "object",
+  "properties": {
+    "settings": {
+      "type": "object",
+      "description": "Key-value mapping of settings to update (e.g. {'group_stock_multi_locations': false} or {'storage_locations': true})"
+    }
+  },
+  "required": ["settings"]
+}</field>
+    </record>
+</odoo>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tally_gst_sync_log_list" model="ir.ui.view">
+        <field name="name">tally.gst.sync.log.list</field>
+        <field name="model">tally.gst.sync.log</field>
+        <field name="arch" type="xml">
+            <list string="E-Invoice / E-Way Bill Tally Logs"
+                  decoration-success="status == 'success'"
+                  decoration-danger="status == 'failed'"
+                  decoration-muted="status == 'skipped'"
+                  default_order="sync_date desc">
+                <field name="sync_date" string="Date/Time"/>
+                <field name="move_name" string="Document"/>
+                <field name="move_id" string="Invoice" optional="show"/>
+                <field name="partner_id" string="Partner" optional="show"/>
+                <field name="irn" string="IRN" optional="show"/>
+                <field name="ewaybill_no" string="E-Way Bill" optional="show"/>
+                <field name="status" string="Status" widget="badge"
+                       decoration-success="status == 'success'"
+                       decoration-danger="status == 'failed'"
+                       decoration-warning="status == 'skipped'"/>
+                <field name="einvoice_sent" string="E-Invoice" optional="hide"/>
+                <field name="ewaybill_sent" string="E-Way Bill Sent" optional="hide"/>
+                <field name="error_message" string="Error" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tally_gst_sync_log_form" model="ir.ui.view">
+        <field name="name">tally.gst.sync.log.form</field>
+        <field name="model">tally.gst.sync.log</field>
+        <field name="arch" type="xml">
+            <form string="E-Invoice / E-Way Bill Tally Log" create="false" edit="false">
+                <header>
+                    <button string="Retry GST Sync" name="action_retry_gst_sync"
+                            type="object"
+                            class="btn-primary"
+                            invisible="status == 'success'"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="success,failed,skipped"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="move_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Document">
+                            <field name="move_id" readonly="1" invisible="not move_id"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="sync_date" readonly="1"/>
+                        </group>
+                        <group string="GST Details Sent">
+                            <field name="irn" readonly="1"/>
+                            <field name="irn_ack_no" readonly="1"/>
+                            <field name="ewaybill_no" readonly="1"/>
+                            <field name="ewaybill_date" readonly="1"/>
+                            <field name="dispatch_from" readonly="1"/>
+                            <field name="ship_to" readonly="1"/>
+                            <field name="transporter_name" readonly="1"/>
+                            <field name="transporter_id" readonly="1"/>
+                            <field name="transport_mode" readonly="1"/>
+                            <field name="vehicle_no" readonly="1"/>
+                            <field name="vehicle_type" readonly="1"/>
+                            <field name="transport_doc_no" readonly="1"/>
+                            <field name="transport_doc_date" readonly="1"/>
+                            <field name="distance" readonly="1"/>
+                            <field name="einvoice_sent" readonly="1"/>
+                            <field name="ewaybill_sent" readonly="1"/>
+                            <field name="tally_guid" readonly="1"/>
+                            <field name="tally_server_url" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Error / Notes" invisible="not error_message">
+                        <field name="error_message" nolabel="1" widget="text" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Request XML (Sent to Tally)">
+                            <field name="request_xml" nolabel="1" widget="text" readonly="1"/>
+                        </page>
+                        <page string="Response XML (Received from Tally)">
+                            <field name="response_xml" nolabel="1" widget="text" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tally_gst_sync_log" model="ir.actions.act_window">
+        <field name="name">E-Invoice / E-Way Bill Logs</field>
+        <field name="res_model">tally.gst.sync.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
