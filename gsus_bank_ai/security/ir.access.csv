@@ -1,0 +1,7 @@
+id,name,model_id,group_id/id,operation,domain
+access_gsus_bank_statement_ai_user,gsus.bank.statement.ai.user,gsus.bank.statement.ai,base.group_user,crud,
+access_gsus_bank_statement_ai_line_user,gsus.bank.statement.ai.line.user,gsus.bank.statement.ai.line,base.group_user,crud,
+access_gsus_bank_ai_rule_user,gsus.bank.ai.rule.user,gsus.bank.ai.rule,base.group_user,crud,
+access_gsus_bank_ai_job_user,gsus.bank.ai.job.user,gsus.bank.ai.job,base.group_user,crud,
+access_gsus_bank_ai_memory_user,gsus.bank.ai.memory.user,gsus.bank.ai.memory,base.group_user,crud,
+access_gsus_bank_statement_upload_wizard_user,gsus.bank.statement.upload.wizard.user,gsus.bank.statement.upload.wizard,base.group_user,crud,

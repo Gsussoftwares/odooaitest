@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tally_uom_map_list" model="ir.ui.view">
+        <field name="name">tally.uom.map.list</field>
+        <field name="model">tally.uom.map</field>
+        <field name="arch" type="xml">
+            <list string="Tally UoM Mapping" editable="bottom">
+                <field name="uom_id" string="Odoo Unit of Measure"/>
+                <field name="tally_symbol" string="Tally Symbol"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tally_uom_map_form" model="ir.ui.view">
+        <field name="name">tally.uom.map.form</field>
+        <field name="model">tally.uom.map</field>
+        <field name="arch" type="xml">
+            <form string="Tally UoM Mapping">
+                <sheet>
+                    <group>
+                        <field name="uom_id"/>
+                        <field name="tally_symbol" placeholder="e.g. Nos, pcs, kg, mtr"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tally_uom_map" model="ir.actions.act_window">
+        <field name="name">Tally UoM Mapping</field>
+        <field name="res_model">tally.uom.map</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

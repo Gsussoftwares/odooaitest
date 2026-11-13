@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Standalone Top-Level App Menu on Odoo Home Screen / App Switcher -->
+    <menuitem id="menu_gsus_bank_ai_root_app"
+              name="Bank Statement AI"
+              web_icon="gsus_bank_ai,static/description/icon.png"
+              sequence="15"/>
+
+    <!-- Top Navbar Menus inside Bank Statement AI App -->
+    <menuitem id="menu_gsus_bank_statement_workbench"
+              name="Dashboard"
+              parent="menu_gsus_bank_ai_root_app"
+              action="action_gsus_bank_workbench_client"
+              sequence="10"/>
+
+    <menuitem id="menu_gsus_bank_statement_upload"
+              name="Upload Statement (AI)"
+              parent="menu_gsus_bank_ai_root_app"
+              action="action_gsus_bank_workbench_upload"
+              sequence="20"/>
+
+    <menuitem id="menu_gsus_bank_statement_sessions_list"
+              name="All Statements"
+              parent="menu_gsus_bank_ai_root_app"
+              action="action_gsus_bank_statement_ai"
+              sequence="30"/>
+
+    <!-- AI Learned Rules (Hidden from top navbar - AI uses automatic memory & LLM)
+    <menuitem id="menu_gsus_bank_ai_rules"
+              name="AI Learned Rules"
+              parent="menu_gsus_bank_ai_root_app"
+              action="action_gsus_bank_ai_rule"
+              sequence="40"
+              active="False"/>
+    -->
+
+    <!-- AI Engines & Keys is now accessible via the top-right Magic AI Systray icon -->
+    <menuitem id="menu_gsus_bank_ai_config"
+              name="AI Engines &amp; Keys"
+              parent="menu_gsus_bank_ai_root_app"
+              action="gsus_bank_ai_bridge.action_gsus_bank_ai_provider"
+              sequence="50"
+              active="False"/>
+</odoo>

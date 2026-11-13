@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Audit Log List View -->
+    <record id="view_gsus_ai_audit_log_tree" model="ir.ui.view">
+        <field name="name">gsus.ai.audit.log.list</field>
+        <field name="model">gsus.ai.audit.log</field>
+        <field name="arch" type="xml">
+            <list string="AI Execution Audit Trail" create="false" edit="false">
+                <field name="create_date" string="Timestamp"/>
+                <field name="user_id"/>
+                <field name="tool_code"/>
+                <field name="result_status" widget="badge" 
+                       decoration-success="result_status == 'success'" 
+                       decoration-danger="result_status == 'error'"/>
+                <field name="duration_ms" string="Duration (ms)"/>
+                <field name="conversation_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Audit Log Form View -->
+    <record id="view_gsus_ai_audit_log_form" model="ir.ui.view">
+        <field name="name">gsus.ai.audit.log.form</field>
+        <field name="model">gsus.ai.audit.log</field>
+        <field name="arch" type="xml">
+            <form string="AI Audit Trail" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="create_date" string="Timestamp"/>
+                            <field name="user_id"/>
+                            <field name="tool_code"/>
+                            <field name="tool_id"/>
+                        </group>
+                        <group>
+                            <field name="result_status" widget="badge"/>
+                            <field name="duration_ms"/>
+                            <field name="conversation_id"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Arguments Payload" name="args">
+                            <field name="arguments_json" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                        </page>
+                        <page string="Result / Output" name="result">
+                            <field name="result_summary" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_gsus_ai_audit_log" model="ir.actions.act_window">
+        <field name="name">AI Audit Trail &amp; Telemetry</field>
+        <field name="res_model">gsus.ai.audit.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Comprehensive security audit log of all tool executions and AI requests.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Standalone action definition for providers -->
+    <!-- Menu is hooked into gsus_bank_ai standalone app -->
+</odoo>

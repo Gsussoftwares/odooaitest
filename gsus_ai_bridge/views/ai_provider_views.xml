@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- GSUS AI Provider Tree View -->
+    <record id="view_gsus_ai_provider_tree" model="ir.ui.view">
+        <field name="name">gsus.ai.provider.list</field>
+        <field name="model">gsus.ai.provider</field>
+        <field name="arch" type="xml">
+            <list string="AI Providers">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="provider_type" widget="badge"/>
+                <field name="model_name"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'connected'" 
+                       decoration-danger="state == 'error'" 
+                       decoration-warning="state == 'draft'"/>
+                <field name="total_calls_count"/>
+                <field name="total_tokens_used"/>
+                <field name="last_health_check"/>
+                <field name="is_active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- GSUS AI Provider Form View -->
+    <record id="view_gsus_ai_provider_form" model="ir.ui.view">
+        <field name="name">gsus.ai.provider.form</field>
+        <field name="model">gsus.ai.provider</field>
+        <field name="arch" type="xml">
+            <form string="AI Provider Configuration">
+                <header>
+                    <button name="action_test_connection" string="Test Connection" type="object" class="btn-primary" icon="fa-bolt"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,connected,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Production Groq / Gemini"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="provider_main" string="Provider Settings">
+                            <field name="provider_type"/>
+                            <field name="groq_model" string="Model Name" 
+                                   invisible="provider_type != 'groq'" 
+                                   required="provider_type == 'groq'"/>
+                            <field name="gemini_model" string="Model Name" 
+                                   invisible="provider_type != 'gemini'" 
+                                   required="provider_type == 'gemini'"/>
+                            <field name="anthropic_model" string="Model Name" 
+                                   invisible="provider_type != 'anthropic'" 
+                                   required="provider_type == 'anthropic'"/>
+                            <field name="model_name" string="Custom Model Name" 
+                                   invisible="(provider_type == 'groq' and groq_model != 'custom') or (provider_type == 'gemini' and gemini_model != 'custom') or (provider_type == 'anthropic' and anthropic_model != 'custom')" 
+                                   placeholder="e.g. qwen/qwen3.8-27b, claude-3-5-sonnet"/>
+                            <field name="base_url" placeholder="Default official endpoint"/>
+                            <field name="is_active"/>
+                        </group>
+                        <group name="provider_credentials" string="Security &amp; API Key">
+                            <field name="api_key" password="True" placeholder="Enter API Key (sk-... or sk-ant-...)"/>
+                            <field name="last_health_check"/>
+                        </group>
+                    </group>
+                    <group string="Model Parameters &amp; Thresholds">
+                        <group>
+                            <field name="temperature"/>
+                            <field name="max_tokens"/>
+                        </group>
+                        <group>
+                            <field name="timeout_seconds"/>
+                            <field name="max_retries"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Diagnostics &amp; Status" name="diagnostics">
+                            <group>
+                                <field name="last_error_message" readonly="1" nolabel="1" 
+                                       placeholder="Run 'Test Connection' to verify integration health."/>
+                            </group>
+                        </page>
+                        <page string="Usage Telemetry" name="usage">
+                            <group>
+                                <field name="total_calls_count"/>
+                                <field name="total_tokens_used"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_gsus_ai_provider" model="ir.actions.act_window">
+        <field name="name">AI Providers &amp; Connections</field>
+        <field name="res_model">gsus.ai.provider</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure your AI Providers (OpenAI, Anthropic Claude, Google Antigravity).
+            </p>
+        </field>
+    </record>
+</odoo>

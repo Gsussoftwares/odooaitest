@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- 1. Shape View -->
+    <record id="skill_shape_view" model="gsus.ai.skill">
+        <field name="name">Shape View</field>
+        <field name="code">shape_view</field>
+        <field name="sequence">10</field>
+        <field name="description">Supports interpretation of a user query to open the appropriate Odoo view with a set of tools necessary to perform the search.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_orm_inspect_model'),
+            ref('tool_orm_search_read'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+
+    <!-- 2. Search Database -->
+    <record id="skill_search_database" model="gsus.ai.skill">
+        <field name="name">Search Database</field>
+        <field name="code">search_database</field>
+        <field name="sequence">20</field>
+        <field name="description">Collection of tools to retrieve information about models, records, partners, sales, and inventory.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_crm_search_leads'),
+            ref('tool_sale_search_orders'),
+            ref('tool_account_search_invoices'),
+            ref('tool_purchase_search_orders'),
+            ref('tool_stock_check_availability'),
+            ref('tool_project_search_tasks'),
+            ref('tool_orm_search_read'),
+            ref('tool_config_get_settings'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+
+    <!-- 3. Update Records -->
+    <record id="skill_update_records" model="gsus.ai.skill">
+        <field name="name">Update Records</field>
+        <field name="code">update_records</field>
+        <field name="sequence">30</field>
+        <field name="description">Allows to update records and change database state safely with action proposal confirmation.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_orm_write_record'),
+            ref('tool_config_set_settings'),
+            ref('tool_calendar_schedule_activity'),
+            ref('tool_chatter_post_message'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+
+    <!-- 4. Create Records -->
+    <record id="skill_create_records" model="gsus.ai.skill">
+        <field name="name">Create Records</field>
+        <field name="code">create_records</field>
+        <field name="sequence">40</field>
+        <field name="description">Allows to draft and create records such as CRM leads, sales orders, purchase orders, and calendar activities.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_crm_create_lead'),
+            ref('tool_sale_create_order'),
+            ref('tool_purchase_create_order'),
+            ref('tool_orm_create_record'),
+            ref('tool_calendar_schedule_activity'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+
+    <!-- 5. Accounting Report Analysis -->
+    <record id="skill_accounting_report_analysis" model="gsus.ai.skill">
+        <field name="name">Accounting Report Analysis</field>
+        <field name="code">accounting_report_analysis</field>
+        <field name="sequence">50</field>
+        <field name="description">Read only report analysis for balances, performance, cash flow, ledgers, aging, taxes and comparisons. Provides discovery, values and drill-down.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_accounting_describe_report'),
+            ref('tool_account_check_partner_balance'),
+            ref('tool_account_search_invoices'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+
+    <!-- 6. Accounting -->
+    <record id="skill_accounting" model="gsus.ai.skill">
+        <field name="name">Accounting</field>
+        <field name="code">accounting</field>
+        <field name="sequence">60</field>
+        <field name="description">Entry point for user-facing accounting questions, reports and audit working files. Report figures also require Accounting Report Analysis.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_accounting_describe_report'),
+            ref('tool_account_check_partner_balance'),
+            ref('tool_account_search_invoices'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+
+    <!-- 7. Accounting Audit Evidence -->
+    <record id="skill_accounting_audit_evidence" model="gsus.ai.skill">
+        <field name="name">Accounting Audit Evidence</field>
+        <field name="code">accounting_audit_evidence</field>
+        <field name="sequence">70</field>
+        <field name="description">Read native audit instructions and action hints, select this session's working file and interpret Odoo accounting evidence.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_accounting_describe_report'),
+            ref('tool_account_check_partner_balance'),
+            ref('tool_account_search_invoices'),
+            ref('tool_orm_search_read'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+
+    <!-- 8. Build Automation -->
+    <record id="skill_build_automation" model="gsus.ai.skill">
+        <field name="name">Build Automation</field>
+        <field name="code">build_automation</field>
+        <field name="sequence">80</field>
+        <field name="description">Create and update persistent automations for actions you should perform later, repeatedly or in response to record events.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_automation_create_or_update'),
+            ref('tool_calendar_schedule_activity'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+
+    <!-- 9. App Store Lifecycle Operations (GSUS AI Special Feature) -->
+    <record id="skill_app_lifecycle" model="gsus.ai.skill">
+        <field name="name">App Store Lifecycle Operations</field>
+        <field name="code">app_lifecycle</field>
+        <field name="sequence">90</field>
+        <field name="description">Full management of Odoo modules: search available apps, install modules, upgrade existing modules, or uninstall unused modules directly from chat.</field>
+        <field name="tool_ids" eval="[(6, 0, [
+            ref('tool_app_list_modules'),
+            ref('tool_app_install_module'),
+            ref('tool_app_upgrade_module'),
+            ref('tool_app_uninstall_module'),
+        ])]"/>
+        <field name="is_active">True</field>
+    </record>
+</odoo>

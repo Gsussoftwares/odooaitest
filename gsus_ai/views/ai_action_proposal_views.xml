@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Proposal List View -->
+    <record id="view_gsus_ai_action_proposal_tree" model="ir.ui.view">
+        <field name="name">gsus.ai.action.proposal.list</field>
+        <field name="model">gsus.ai.action.proposal</field>
+        <field name="arch" type="xml">
+            <list string="AI Action Proposals" decoration-warning="state == 'pending'" decoration-success="state == 'confirmed'" decoration-danger="state == 'rejected'">
+                <field name="create_date" string="Proposed At"/>
+                <field name="conversation_id"/>
+                <field name="tool_id"/>
+                <field name="summary"/>
+                <field name="state" widget="badge"/>
+                <field name="executed_by"/>
+                <field name="executed_at"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Proposal Form View -->
+    <record id="view_gsus_ai_action_proposal_form" model="ir.ui.view">
+        <field name="name">gsus.ai.action.proposal.form</field>
+        <field name="model">gsus.ai.action.proposal</field>
+        <field name="arch" type="xml">
+            <form string="AI Action Proposal">
+                <header>
+                    <button name="action_confirm" string="Approve &amp; Execute" type="object" class="btn-primary" 
+                            invisible="state != 'pending'" icon="fa-check"/>
+                    <button name="action_reject" string="Reject Action" type="object" class="btn-danger" 
+                            invisible="state != 'pending'" icon="fa-times"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,confirmed,rejected"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="summary" class="oe_edit_only"/>
+                        <h2>
+                            <field name="summary"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group name="left">
+                            <field name="conversation_id"/>
+                            <field name="tool_id"/>
+                        </group>
+                        <group name="right">
+                            <field name="executed_by" invisible="not executed_by"/>
+                            <field name="executed_at" invisible="not executed_at"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Proposed Parameters" name="arguments">
+                            <field name="arguments_json" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                        </page>
+                        <page string="Execution Result" name="result" invisible="not execution_result">
+                            <field name="execution_result" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_gsus_ai_action_proposal" model="ir.actions.act_window">
+        <field name="name">Action Proposals &amp; Approvals</field>
+        <field name="res_model">gsus.ai.action.proposal</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Review and approve mutating AI actions before they touch your live database.
+            </p>
+        </field>
+    </record>
+</odoo>

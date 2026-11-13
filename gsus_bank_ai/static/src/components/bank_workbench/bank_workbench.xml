@@ -1,0 +1,2693 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="gsus_bank_ai.BankWorkbench" owl="1">
+
+        <div class="lai-app-container">
+
+            <!-- ══════════════════════════════════════════════
+
+                 TOP CONTROL PANEL & NAVBAR (Authentic Odoo Enterprise)
+
+            ══════════════════════════════════════════════ -->
+
+            <header class="lai-topbar">
+
+                <div class="lai-topbar-left">
+
+                    <div class="lai-brand" t-on-click="() => this.switchToDashboard()">
+
+                        <img src="/gsus_bank_ai/static/src/img/gsus_arches.png?v=3" alt="GSUS" class="lai-brand-logo-img"/>
+
+                        <span class="lai-brand-name">GSUS Bank AI</span>
+
+                    </div>
+
+                    <!-- Contextual Navigation (Visible only during statement review or vouchers) -->
+
+                    <nav class="lai-nav-links" t-if="this.state.statement_id and (this.state.currentView === 'review' or this.state.currentView === 'vouchers')">
+
+                        <button t-attf-class="lai-nav-item #{this.state.currentView === 'review' ? 'lai-nav-active' : ''}"
+
+                                t-on-click="() => this.switchToReview()">
+
+                            <i class="fa fa-table"/> Review Transactions
+
+                        </button>
+
+                        <button t-attf-class="lai-nav-item #{this.state.currentView === 'vouchers' ? 'lai-nav-active' : ''}"
+
+                                t-on-click="() => this.switchToVouchers()">
+
+                            <i class="fa fa-list-alt"/> Advanced Vouchers
+
+                        </button>
+
+                    </nav>
+
+                </div>
+
+                <div class="lai-topbar-right">
+
+                    <!-- Quick Export Actions (Excel & PDF) -->
+
+                    <t t-if="this.state.currentView === 'review'">
+
+                        <button class="lai-topbar-action-btn btn-export-excel"
+
+                                t-on-click="() => this.exportExcel()"
+
+                                title="Export Statement to Excel (.xlsx)">
+
+                            <svg class="lai-svg-icon" viewBox="0 0 32 32" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+                                <!-- Spreadsheet Back Page -->
+
+                                <rect x="9" y="5" width="18" height="22" rx="2" fill="#FFFFFF"/>
+
+                                <rect x="9" y="5" width="18" height="22" rx="2" stroke="#21A366" stroke-width="1.2"/>
+
+                                <path d="M9 10H27" stroke="#21A366" stroke-width="1.2"/>
+
+                                <path d="M9 15H27" stroke="#E0E0E0" stroke-width="1"/>
+
+                                <path d="M9 20H27" stroke="#E0E0E0" stroke-width="1"/>
+
+                                <path d="M15 10V27" stroke="#E0E0E0" stroke-width="1"/>
+
+                                <path d="M21 10V27" stroke="#E0E0E0" stroke-width="1"/>
+
+                                <rect x="15" y="10" width="6" height="5" fill="#E8F5E9"/>
+
+                                <rect x="21" y="15" width="6" height="5" fill="#E8F5E9"/>
+
+                                <!-- Excel Front 3D Cover Tile -->
+
+                                <rect x="4" y="8" width="14" height="16" rx="2" fill="#107C41"/>
+
+                                <!-- Bold White 'X' -->
+
+                                <path d="M7.8 12H9.6L10.9 14.8L12.3 12H14.1L12.1 16L14.2 20H12.4L11 17.1L9.6 20H7.7L9.9 16L7.8 12Z" fill="#FFFFFF"/>
+
+                            </svg>
+
+                        </button>
+
+                        <button class="lai-topbar-action-btn btn-print-pdf"
+
+                                t-on-click="() => this.printPdfStatement()"
+
+                                title="Print / Export Statement PDF">
+
+                            <svg class="lai-svg-icon" viewBox="0 0 32 32" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+                                <!-- PDF Document Sheet -->
+
+                                <path d="M6 4C4.89543 4 4 4.89543 4 6V26C4 27.1046 4.89543 28 6 28H26C27.1046 28 28 27.1046 28 26V12L20 4H6Z" fill="#E53935"/>
+
+                                <!-- Folded Dog-Ear Corner -->
+
+                                <path d="M20 4V10C20 11.1046 20.8954 12 22 12H28L20 4Z" fill="#C62828"/>
+
+                                <path d="M20 4L28 12H22C20.8954 12 20 11.1046 20 10V4Z" fill="#B71C1C" fill-opacity="0.25"/>
+
+                                <!-- Adobe Acrobat Tri-Swirl Symbol -->
+
+                                <path d="M21.2 20.5C20.1 20.2 18.4 20.0 16.9 20.5C16.2 20.7 15.4 21.2 14.8 21.7C13.5 22.8 11.7 23.9 10.2 23.4C9.2 23.1 8.7 22.1 9.0 21.1C9.3 19.8 11.0 18.8 13.4 18.3C14.3 18.1 15.3 17.9 16.4 17.7C17.3 16.1 18.3 14.1 18.9 12.2C18.5 10.8 18.0 9.2 18.6 8.3C19.1 7.7 19.9 7.4 20.5 7.8C21.2 8.2 21.3 9.3 21.0 10.5C20.7 11.8 19.9 13.5 19.1 15.0C20.1 16.8 21.5 18.7 22.8 19.7C23.4 20.2 23.8 20.8 23.6 21.3C23.3 21.9 22.5 22.0 21.8 21.8C21.5 21.6 21.3 21.2 21.2 20.5ZM13.0 19.6C11.6 20.0 10.5 20.7 10.3 21.4C10.2 21.8 10.5 22.1 10.9 22.2C12.0 22.4 13.4 21.3 14.4 20.3C13.9 20.0 13.4 19.8 13.0 19.6ZM19.4 9.6C19.4 9.1 19.2 8.9 18.9 8.9C18.7 8.9 18.6 9.2 18.7 9.8C18.9 10.6 19.2 11.8 19.6 12.7C19.8 11.5 19.9 10.3 19.4 9.6ZM17.1 19.1C18.0 18.9 19.0 18.9 19.8 19.1C19.1 18.4 18.2 17.2 17.6 16.0C17.2 17.0 16.7 18.1 16.3 19.2C16.5 19.2 16.8 19.1 17.1 19.1Z" fill="#FFFFFF"/>
+
+                            </svg>
+
+                        </button>
+
+                    </t>
+
+                    <!-- AI Provider Configuration Modal Trigger -->
+
+                    <div t-attf-class="lai-telemetry-badge status-#{this.state.aiEngineColor || 'warning'}"
+
+                         t-on-click="() => this.openProviderModal()"
+
+                         title="Click to Configure AI Engines &amp; Keys">
+
+                        <span class="lai-pulse-dot"/>
+
+                        <span><t t-esc="this.state.aiEngineStatus"/></span>
+
+                        <i class="fa fa-cog ms-1 text-muted"/>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+            <!-- ══════════════════════════════════════════════
+
+                 VIEW 1: FINANCIAL OVERVIEW DASHBOARD
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.currentView === 'dashboard'">
+
+                <div class="lai-dashboard-view">
+
+                    <!-- Dashboard Header -->
+
+                    <div class="lai-view-header">
+
+                        <div class="lai-header-titles">
+
+                            <h1 class="lai-title">Financial Overview</h1>
+
+                            <div class="lai-subtitle">
+
+                                <span>Company: <t t-esc="this.state.dashboard.active_workspace.company_name"/></span>
+
+                                <span class="mx-2">•</span>
+
+                                <span>User: <t t-esc="this.state.dashboard.active_workspace.user_name"/></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lai-header-actions">
+
+                            <button class="lai-btn lai-btn-secondary"
+
+                                    t-on-click="() => this.loadDashboardMetrics(true)"
+
+                                    t-att-disabled="this.state.isRefreshingDashboard"
+
+                                    title="Refresh Dashboard Metrics">
+
+                                <svg t-attf-class="lai-refresh-icon me-1 #{this.state.isRefreshingDashboard ? 'lai-spin' : ''}"
+
+                                     viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+
+                                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3L21.5 8M22 12.5a10 10 0 0 1-18.8 4.2L2.5 16"/>
+
+                                </svg>
+
+                                <t t-if="this.state.isRefreshingDashboard">Refreshing...</t>
+
+                                <t t-else="">Refresh</t>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Top 4 KPI Cards -->
+
+                    <div class="lai-kpi-row">
+
+                        <div class="lai-kpi-card">
+
+                            <div class="lai-kpi-label">TOTAL TRANSACTIONS EXTRACTED</div>
+
+                            <div class="lai-kpi-val-row">
+
+                                <span class="lai-kpi-val text-primary"><t t-esc="this.state.dashboard.total_transactions || 0"/></span>
+
+                                <span class="badge bg-primary-subtle text-primary">Lines Parsed</span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lai-kpi-card">
+
+                            <div class="lai-kpi-label">TOTAL JOBS PROCESSED</div>
+
+                            <div class="lai-kpi-val-row">
+
+                                <span class="lai-kpi-val"><t t-esc="this.state.dashboard.total_jobs"/></span>
+
+                                <span class="badge bg-light text-dark">Batches</span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lai-kpi-card">
+
+                            <div class="lai-kpi-label">AI ACCURACY RATE</div>
+
+                            <div class="lai-kpi-val-row">
+
+                                <span class="lai-kpi-val text-success"><t t-esc="this.state.dashboard.accuracy_rate"/>%</span>
+
+                                <span class="badge bg-success-subtle text-success">Verified</span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lai-kpi-card lai-clickable-card"
+
+                             t-on-click="() => this.openPendingStatements()"
+
+                             title="Click to view and review pending unposted statements">
+
+                            <div class="lai-kpi-label">STATEMENTS PENDING REVIEW</div>
+
+                            <div class="lai-kpi-val-row">
+
+                                <span t-attf-class="lai-kpi-val #{this.state.dashboard.active_tasks > 0 ? 'text-warning' : 'text-success'}">
+
+                                    <t t-esc="this.state.dashboard.active_tasks"/>
+
+                                </span>
+
+                                <span t-attf-class="badge #{this.state.dashboard.active_tasks > 0 ? 'bg-warning-subtle text-warning border border-warning' : 'bg-success-subtle text-success'}">
+
+                                    <t t-esc="this.state.dashboard.active_tasks > 0 ? 'Needs Sign-Off' : 'All Clear'"/>
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Split Row: Invoice Queue + Workspace AI -->
+
+                    <div class="lai-dash-split-row">
+
+                        <!-- Real Invoice Queue Card -->
+
+                        <div class="lai-dash-card">
+
+                            <div class="lai-dash-card-header">
+
+                                <h3 class="lai-dash-card-title">
+
+                                    <i class="fa fa-folder-open-o text-primary"/> Invoice Queues &amp; Pending Settlements
+
+                                </h3>
+
+                                <span class="badge bg-light text-dark">Native Accounting Integration</span>
+
+                            </div>
+
+                            <div class="lai-dash-card-body">
+
+                                <div class="lai-queue-grid">
+
+                                    <div class="lai-queue-box" t-on-click="() => this.openInvoiceQueue('out_invoice')" title="Click to view Unpaid Customer Invoices">
+
+                                        <div class="lai-queue-box-title">Unpaid Customer Invoices</div>
+
+                                        <div class="lai-queue-box-val">
+
+                                            ₹ <t t-esc="this.formatAmount(this.state.dashboard.invoice_queue.customer_invoices_amount)"/>
+
+                                        </div>
+
+                                        <div class="lai-queue-box-sub">
+
+                                            <i class="fa fa-external-link"/> <t t-esc="this.state.dashboard.invoice_queue.customer_invoices_count"/> Posted Invoices Waiting Auto-Reconciliation
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="lai-queue-box" t-on-click="() => this.openInvoiceQueue('in_invoice')" title="Click to view Unpaid Vendor Bills">
+
+                                        <div class="lai-queue-box-title">Unpaid Vendor Bills</div>
+
+                                        <div class="lai-queue-box-val text-danger">
+
+                                            ₹ <t t-esc="this.formatAmount(this.state.dashboard.invoice_queue.vendor_bills_amount)"/>
+
+                                        </div>
+
+                                        <div class="lai-queue-box-sub">
+
+                                            <i class="fa fa-external-link"/> <t t-esc="this.state.dashboard.invoice_queue.vendor_bills_count"/> Bills Ready for Payment Auto-Match
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Active Workspace Info -->
+
+                        <div class="lai-dash-card">
+
+                            <div class="lai-dash-card-header">
+
+                                <h3 class="lai-dash-card-title">
+
+                                    <i class="fa fa-microchip text-success"/> Multi-Engine AI Setup
+
+                                </h3>
+
+                                <button class="btn btn-sm btn-outline-secondary" t-on-click="() => this.openProviderModal()">
+
+                                    <i class="fa fa-cog me-1"/> Settings
+
+                                </button>
+
+                            </div>
+
+                            <div class="lai-dash-card-body" style="font-size: 12px; display: flex; flex-direction: column; gap: 0.5rem;">
+
+                                <div class="d-flex justify-content-between pb-1 border-bottom">
+
+                                    <span class="text-muted">Primary Engine</span>
+
+                                    <strong class="text-dark"><t t-esc="this.state.aiEngineName || 'Google Gemini'"/> (<t t-esc="this.state.aiEngineModel || 'Not set'"/>)</strong>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between pb-1 border-bottom">
+
+                                    <span class="text-muted">Engine Status</span>
+
+                                    <span t-attf-class="badge #{this.state.aiEngineHasKey ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'}">
+
+                                        <t t-esc="this.state.aiEngineHasKey ? 'Active &amp; Connected' : 'API Key Missing'"/>
+
+                                    </span>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between pb-1 border-bottom">
+
+                                    <span class="text-muted">Backup Engine</span>
+
+                                    <span class="text-dark"><t t-esc="this.state.backupEngineName || 'OpenAI (GPT-4o Vision)'"/></span>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between pb-1 border-bottom">
+
+                                    <span class="text-muted">Indian UPI Parser</span>
+
+                                    <span class="badge bg-success-subtle text-success">Active &amp; Calibrated</span>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+
+                                    <span class="text-muted">Zero Suspense Reconciler</span>
+
+                                    <span class="badge bg-primary-subtle text-primary">Autonomous</span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Recent Statements Table -->
+
+                    <div class="lai-table-card">
+
+                        <div class="lai-dash-card-header">
+
+                            <h3 class="lai-dash-card-title">
+
+                                <i class="fa fa-history text-muted"/> Recent Bank Statement Batches
+
+                            </h3>
+
+                            <button class="btn btn-sm btn-link text-primary" t-on-click="() => this.openAllStatements()">
+
+                            <i class="fa fa-list me-1"/> View All Batches
+
+                        </button>
+
+                        </div>
+
+                        <div class="table-responsive">
+
+                            <table class="table lai-native-table" style="min-width: 1350px;">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>Statement Batch</th>
+
+                                        <th>Bank</th>
+
+                                        <th>Date</th>
+
+                                        <th class="text-end">Total Debits</th>
+
+                                        <th class="text-end">Total Credits</th>
+
+                                        <th class="text-center">Transactions</th>
+
+                                        <th class="text-center">Avg Confidence</th>
+
+                                        <th>Status</th>
+
+                                        <th class="text-end">Actions</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <t t-if="!this.state.dashboard.recent_statements.length">
+
+                                        <tr>
+
+                                            <td colspan="9" class="text-center py-4 text-muted">
+
+                                                No statement batches found. Click <strong>Upload Statement</strong> to upload your first bank statement document.
+
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+                                    <t t-foreach="this.state.dashboard.recent_statements" t-as="stmt" t-key="stmt.id">
+
+                                        <tr>
+
+                                            <td><strong><t t-esc="stmt.name"/></strong></td>
+
+                                            <td><span class="badge bg-light text-dark"><t t-esc="stmt.bank_name"/></span></td>
+
+                                            <td><t t-esc="stmt.statement_date"/></td>
+
+                                            <td class="text-end text-danger">₹ <t t-esc="this.formatAmount(stmt.total_debit)"/></td>
+
+                                            <td class="text-end text-success">₹ <t t-esc="this.formatAmount(stmt.total_credit)"/></td>
+
+                                            <td class="text-center"><t t-esc="stmt.total_transactions"/></td>
+
+                                            <td class="text-center">
+
+                                                <span class="badge bg-light text-dark"><t t-esc="stmt.confidence_avg"/>%</span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span t-attf-class="badge text-white fw-semibold #{stmt.state === 'pushed' ? 'bg-success' : (stmt.state === 'reviewed' ? 'bg-primary' : 'bg-secondary')}">
+
+                                                    <t t-esc="stmt.state_label"/>
+
+                                                </span>
+
+                                            </td>
+
+                                            <td class="text-end">
+
+                                                <div class="d-inline-flex align-items-center justify-content-end gap-1">
+
+                                                    <t t-if="stmt.state === 'pushed'">
+
+                                                        <button class="btn btn-sm btn-outline-success"
+
+                                                                t-on-click="() => this.openBankReconciliation(stmt.id)"
+
+                                                                title="Open in Odoo Bank Reconciliation">
+
+                                                            <i class="fa fa-university me-1"/> Reconcile
+
+                                                        </button>
+
+                                                    </t>
+
+                                                    <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.switchToReview(stmt.id)" title="Open Statement Review &amp; Staging">
+
+                                                        <i class="fa fa-folder-open-o me-1"/> Open Staging
+
+                                                    </button>
+
+                                                    <button class="btn btn-sm btn-outline-danger" t-on-click="() => this.deleteStatementBatch(stmt.id)" title="Delete Statement Batch">
+
+                                                        <i class="fa fa-trash-o"/>
+
+                                                    </button>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 VIEW 2: REVIEW TRANSACTIONS (Native Odoo Atmosphere)
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.currentView === 'review'">
+
+                <div class="lai-review-view">
+
+                    <!-- Standard Odoo Statusbar & Action Header -->
+
+                    <div class="lai-statusbar-row">
+
+                        <div class="lai-statusbar-actions">
+
+                            <!-- 1-Click Push Button -->
+
+                            <t t-if="this.state.state !== 'pushed'">
+
+                                <button class="lai-btn lai-btn-primary" t-on-click="() => this.executePush()" t-att-disabled="this.state.isPushing">
+
+                                    <i class="fa fa-arrow-circle-right"/> Push to Odoo &amp; Auto-Reconcile
+
+                                </button>
+
+                                <button class="lai-btn lai-btn-secondary" t-on-click="() => this.autoAssignHighConfidence()">
+
+                                    <i class="fa fa-magic text-warning"/> Auto-Assign (85%+)
+
+                                </button>
+
+                            </t>
+
+                            <t t-if="this.state.state === 'pushed'">
+
+                                <button class="lai-btn lai-btn-primary" t-on-click="() => this.openBankReconciliation()"
+
+                                        title="Open Odoo Native Bank Reconciliation Widget for this statement">
+
+                                    <i class="fa fa-university me-1"/> Open in Odoo Bank Reconciliation
+
+                                </button>
+
+                                <button class="lai-btn lai-btn-secondary" t-on-click="() => this.openOdooStatement()"
+
+                                        title="View Native Statement Form">
+
+                                    <i class="fa fa-file-text-o me-1"/> View Statement
+
+                                </button>
+
+                                <button class="lai-btn lai-btn-danger" t-on-click="() => this.revertPush()">
+
+                                    <i class="fa fa-undo me-1"/> Rollback / Revert
+
+                                </button>
+
+                            </t>
+
+                            <button class="lai-btn lai-btn-secondary" t-on-click="() => this.state.isAddTxnModalOpen = true">
+
+                                <i class="fa fa-plus"/> Add Row
+
+                            </button>
+
+                            <button t-attf-class="lai-btn #{this.state.showPdfPreview ? 'lai-btn-primary' : 'lai-btn-secondary'}"
+
+                                    t-on-click="() => this.togglePdfPreview()"
+
+                                    title="Toggle Split-Screen PDF Statement Preview">
+
+                                <i class="fa fa-columns me-1"/> <t t-esc="this.state.showPdfPreview ? 'Hide PDF' : 'Split-Screen PDF'"/>
+
+                            </button>
+
+                        </div>
+
+                        <!-- Statusbar Stage Arrow Steps -->
+
+                        <div class="lai-statusbar-arrows">
+
+                            <span t-attf-class="lai-arrow-step #{this.state.state === 'draft' ? 'active-step' : ''}">Uploaded</span>
+
+                            <span t-attf-class="lai-arrow-step #{this.state.state === 'parsed' ? 'active-step' : ''}">AI Parsed</span>
+
+                            <span t-attf-class="lai-arrow-step #{this.state.state === 'reviewed' ? 'active-step' : ''}">Reviewed</span>
+
+                            <span t-attf-class="lai-arrow-step #{this.state.state === 'pushed' ? 'active-step' : ''}">Posted to Odoo</span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Push Progress Bar (when active) -->
+
+                    <t t-if="this.state.isPushing">
+
+                        <div class="progress" style="height: 6px;">
+
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+
+                                 t-attf-style="width: #{this.state.pushProgress}%"/>
+
+                        </div>
+
+                    </t>
+
+                    <!-- Balance Odometer Bar -->
+
+                    <div class="lai-odometer-bar">
+
+                        <div class="lai-odo-item">
+
+                            <span class="lai-odo-lbl">OPENING BALANCE</span>
+
+                            <span class="lai-odo-val">₹ <t t-esc="this.formatAmount(this.state.opening_balance)"/></span>
+
+                        </div>
+
+                        <div class="lai-odo-item">
+
+                            <span class="lai-odo-lbl">TOTAL DEBITS (OUT)</span>
+
+                            <span class="lai-odo-val val-debit">₹ <t t-esc="this.formatAmount(this.state.total_debit)"/></span>
+
+                        </div>
+
+                        <div class="lai-odo-item">
+
+                            <span class="lai-odo-lbl">TOTAL CREDITS (IN)</span>
+
+                            <span class="lai-odo-val val-credit">₹ <t t-esc="this.formatAmount(this.state.total_credit)"/></span>
+
+                        </div>
+
+                        <div class="lai-odo-item">
+
+                            <span class="lai-odo-lbl">NET MOVEMENT</span>
+
+                            <span class="lai-odo-val">₹ <t t-esc="this.formatAmount(this.state.net_flow)"/></span>
+
+                        </div>
+
+                        <div class="lai-odo-item">
+
+                            <span class="lai-odo-lbl">CLOSING BALANCE</span>
+
+                            <span class="lai-odo-val">₹ <t t-esc="this.formatAmount(this.state.closing_balance)"/></span>
+
+                        </div>
+
+                        <div class="lai-odo-item">
+
+                            <span class="lai-odo-lbl">MATH VERIFICATION</span>
+
+                            <span t-attf-class="badge text-white fw-semibold #{this.state.verification_state === 'verified' ? 'bg-success' : 'bg-warning'} mt-1">
+
+                                <t t-esc="this.state.verification_state === 'verified' ? '✓ Reconciled' : '⚠️ Unverified'"/>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Control Bar: Filter Tabs & Search -->
+
+                    <div class="lai-control-bar">
+
+                        <div class="lai-filter-pills">
+
+                            <button t-attf-class="lai-pill-btn #{this.state.activeTab === 'all' ? 'pill-active' : ''}"
+
+                                    t-on-click="() => this.setFilterTab('all')">
+
+                                <i class="fa fa-bars me-1"/> All (<t t-esc="this.state.total_transactions"/>)
+
+                            </button>
+
+                            <button t-attf-class="lai-pill-btn #{this.state.activeTab === 'suggested' ? 'pill-active' : ''}"
+
+                                    t-on-click="() => this.setFilterTab('suggested')">
+
+                                <i class="fa fa-magic me-1"/> AI Suggested (<t t-esc="this.state.assigned_count"/>)
+
+                            </button>
+
+                            <button t-attf-class="lai-pill-btn #{this.state.activeTab === 'reviewed' ? 'pill-active' : ''}"
+
+                                    t-on-click="() => this.setFilterTab('reviewed')">
+
+                                <i class="fa fa-check-circle me-1"/> Reviewed (<t t-esc="this.state.reviewed_count"/>)
+
+                            </button>
+
+                            <button t-attf-class="lai-pill-btn #{this.state.activeTab === 'not_assigned' ? 'pill-active' : ''}"
+
+                                    t-on-click="() => this.setFilterTab('not_assigned')">
+
+                                <i class="fa fa-clock-o me-1"/> Not Assigned (<t t-esc="this.state.unassigned_count"/>)
+
+                            </button>
+
+                            <t t-if="this.state.anomalies_count > 0">
+
+                                <button t-attf-class="lai-pill-btn fw-bold #{this.state.activeTab === 'anomalies' ? 'pill-active text-white' : 'text-danger'}"
+
+                                        t-on-click="() => this.setFilterTab('anomalies')"
+
+                                        title="Click to filter flagged anomalies">
+
+                                    <i class="fa fa-exclamation-triangle me-1"/> Anomalies (<t t-esc="this.state.anomalies_count"/>)
+
+                                </button>
+
+                            </t>
+
+                        </div>
+
+                        <div class="lai-search-box">
+
+                            <i class="fa fa-search"/>
+
+                            <input type="text" placeholder="Search narration, ref, partner..."
+
+                                   t-att-value="this.state.searchQuery"
+
+                                   t-on-input="(ev) => this.state.searchQuery = ev.target.value"/>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Floating Bulk Action Bar (when rows are selected) -->
+
+                    <t t-if="this.state.selectedLineIds.length > 0">
+
+                        <div class="lai-bulk-bar">
+
+                            <div>
+
+                                <i class="fa fa-check-square-o me-1"/>
+
+                                <strong><t t-esc="this.state.selectedLineIds.length"/></strong> transactions selected
+
+                            </div>
+
+                            <div class="lai-bulk-bar-actions">
+
+                                <button class="btn btn-sm btn-primary" t-on-click="() => this.openBulkAssignModal()">
+
+                                    <i class="fa fa-pencil-square-o me-1"/> Bulk Assign Ledger / Contact
+
+                                </button>
+
+                                <button class="btn btn-sm btn-success" t-on-click="() => this.executeBulkReviewed()">
+
+                                    <i class="fa fa-check me-1"/> Mark Reviewed
+
+                                </button>
+
+                                <button class="btn btn-sm btn-danger" t-on-click="() => this.executeBulkDelete()">
+
+                                    <i class="fa fa-trash-o me-1"/> Delete Selected
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </t>
+
+                    <!-- Main Split Workbench (Table + Split-Screen PDF Viewer) -->
+
+                    <div class="lai-split-workbench-container d-flex gap-3">
+
+                        <div t-attf-class="lai-table-card flex-grow-1 #{this.state.showPdfPreview ? 'lai-table-split' : 'w-100'}">
+
+                        <div class="table-responsive" style="height: calc(100vh - 280px); min-height: 520px; max-height: calc(100vh - 280px); overflow-y: auto;">
+
+                            <table class="table lai-native-table" style="min-width: 1350px;">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th style="width: 35px;" class="text-center">
+
+                                            <input type="checkbox" t-on-change="(ev) => this.toggleSelectAll(ev)"
+
+                                                   t-att-checked="this.isAllSelected"/>
+
+                                        </th>
+
+                                        <th style="width: 85px;">Date</th>
+
+                                        <th style="width: 55px;" class="text-center">Mode</th>
+
+                                        <th>Narration / Counterparty</th>
+
+                                        <th style="width: 130px;">Reference / UTR</th>
+
+                                        <th class="text-end" style="width: 95px;">Debit</th>
+
+                                        <th class="text-end" style="width: 95px;">Credit</th>
+
+                                        <th style="width: 150px;">Assigned Contact</th>
+
+                                        <th style="width: 155px;">Assigned Ledger</th>
+
+                                        <th class="text-center" style="width: 80px;">Confidence</th>
+
+                                        <th class="text-center" style="width: 95px;">Status</th>
+
+                                        <th class="text-end" style="width: 290px; min-width: 290px;">Actions</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <t t-if="!this.filteredLines.length">
+
+                                        <tr>
+
+                                            <td colspan="12" class="text-center py-4 text-muted">
+
+                                                No transactions match the selected filter.
+
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+                                    <t t-foreach="this.filteredLines" t-as="l" t-key="l.id">
+
+                                        <tr t-att-class="this.state.selectedLineIds.includes(l.id) ? 'table-active' : ''">
+
+                                            <td class="text-center">
+
+                                                <input type="checkbox" t-att-checked="this.state.selectedLineIds.includes(l.id)"
+
+                                                       t-on-click="() => this.toggleSelectLine(l.id)"/>
+
+                                            </td>
+
+                                            <td class="text-nowrap"><t t-esc="l.date"/></td>
+
+                                            <td>
+
+                                                <t t-set="modeBadge" t-value="this.getPaymentModeBadge(l.payment_mode)"/>
+
+                                                <span t-attf-class="badge #{modeBadge.class}">
+
+                                                    <t t-esc="modeBadge.label"/>
+
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <div><t t-esc="l.narration"/></div>
+
+                                                <div class="mt-1 d-flex flex-wrap gap-1">
+
+                                                    <t t-if="l.is_duplicate">
+
+                                                        <span class="lai-badge lai-badge-warning" title="Duplicate Transaction detected">
+
+                                                            <i class="fa fa-clone me-1"/> Duplicate
+
+                                                        </span>
+
+                                                    </t>
+
+                                                    <t t-if="l.is_anomaly">
+
+                                                        <span class="lai-badge lai-badge-danger" t-att-title="l.anomaly_reason || 'Anomaly / Outlier Detected'">
+
+                                                            <i class="fa fa-exclamation-triangle me-1"/> Anomaly
+
+                                                        </span>
+
+                                                    </t>
+
+                                                    <t t-if="l.group_remark">
+
+                                                        <span class="badge bg-light text-muted border">
+
+                                                            <i class="fa fa-comment-o me-1"/> <t t-esc="l.group_remark"/>
+
+                                                        </span>
+
+                                                    </t>
+
+                                                </div>
+
+                                            </td>
+
+                                            <td class="font-monospace text-muted" style="font-size: 11px;">
+
+                                                <t t-esc="l.reference || '-'"/>
+
+                                            </td>
+
+                                            <td class="text-end text-danger fw-bold">
+
+                                                <t t-if="l.debit > 0">₹ <t t-esc="this.formatAmount(l.debit)"/></t>
+
+                                                <t t-else="">-</t>
+
+                                            </td>
+
+                                            <td class="text-end text-success fw-bold">
+
+                                                <t t-if="l.credit > 0">₹ <t t-esc="this.formatAmount(l.credit)"/></t>
+
+                                                <t t-else="">-</t>
+
+                                            </td>
+
+                                            <!-- Inline Editable Partner Cell -->
+
+                                            <td style="position: relative;">
+
+                                                <div class="editable-cell" t-on-click="() => this.startInlineEdit(l.id, 'partner')">
+
+                                                    <span><t t-esc="l.partner_name || 'Not assigned'"/></span>
+
+                                                    <i class="fa fa-pencil edit-hint-icon"/>
+
+                                                </div>
+
+                                                <!-- Autocomplete Search Popover -->
+
+                                                <t t-if="this.isEditingPartner(l.id)">
+
+                                                    <div class="inline-search-dropdown">
+
+                                                        <div class="p-1 border-bottom d-flex align-items-center">
+
+                                                            <input type="text" class="form-control form-control-sm" placeholder="Search partner name..."
+
+                                                                   t-on-input="(ev) => this.searchPartnersLive(ev)"
+
+                                                                   t-on-keydown="(ev) => this.onSuggestionKeyDown(ev, 'partner', l)"
+
+                                                                   t-on-blur="(ev) => this.onInlineBlur(ev, l, 'partner')"
+
+                                                                   autofocus="true"/>
+
+                                                            <button class="btn btn-sm btn-link text-muted p-0 ms-1" t-on-click="() => this.cancelInlineEdit()" title="Close"><i class="fa fa-times"/></button>
+
+                                                        </div>
+
+                                                        <t t-foreach="this.state.partnerSearchResults" t-as="p" t-key="p.id">
+
+                                                            <div t-attf-class="inline-dropdown-item #{p_index === this.state.highlightedSuggestionIndex ? 'active' : ''}"
+
+                                                                 t-on-mousedown.prevent="() => this.selectInlinePartner(l, p)">
+
+                                                                <i class="fa fa-user-o me-1 text-muted"/> <t t-esc="p.name"/>
+
+                                                            </div>
+
+                                                        </t>
+
+                                                    </div>
+
+                                                </t>
+
+                                            </td>
+
+                                            <!-- Inline Editable Account Cell -->
+
+                                            <td style="position: relative;">
+
+                                                <div class="editable-cell" t-on-click="() => this.startInlineEdit(l.id, 'account')">
+
+                                                    <span><t t-esc="l.account_name || 'Not assigned'"/></span>
+
+                                                    <i class="fa fa-pencil edit-hint-icon"/>
+
+                                                </div>
+
+                                                <!-- Autocomplete Search Popover -->
+
+                                                <t t-if="this.isEditingAccount(l.id)">
+
+                                                    <div class="inline-search-dropdown">
+
+                                                        <div class="p-1 border-bottom d-flex align-items-center">
+
+                                                            <input type="text" class="form-control form-control-sm" placeholder="Search ledger code/name..."
+
+                                                                   t-on-input="(ev) => this.searchAccountsLive(ev)"
+
+                                                                   t-on-keydown="(ev) => this.onSuggestionKeyDown(ev, 'account', l)"
+
+                                                                   t-on-blur="(ev) => this.onInlineBlur(ev, l, 'account')"
+
+                                                                   autofocus="true"/>
+
+                                                            <button class="btn btn-sm btn-link text-muted p-0 ms-1" t-on-click="() => this.cancelInlineEdit()" title="Close"><i class="fa fa-times"/></button>
+
+                                                        </div>
+
+                                                        <t t-foreach="this.state.accountSearchResults" t-as="a" t-key="a.id">
+
+                                                            <div t-attf-class="inline-dropdown-item #{a_index === this.state.highlightedSuggestionIndex ? 'active' : ''}"
+
+                                                                 t-on-mousedown.prevent="() => this.selectInlineAccount(l, a)">
+
+                                                                <i class="fa fa-book me-1 text-muted"/> <t t-esc="a.code ? a.code + ' ' : ''"/><t t-esc="a.name"/>
+
+                                                            </div>
+
+                                                        </t>
+
+                                                    </div>
+
+                                                </t>
+
+                                            </td>
+
+                                            <td class="text-center">
+
+                                                <span class="badge bg-light text-dark"><t t-esc="l.confidence"/>%</span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span t-attf-class="badge text-white fw-semibold #{l.status === 'reviewed' ? 'bg-success' : (l.status === 'suggested' ? 'bg-primary' : 'bg-secondary')}">
+
+                                                    <t t-esc="l.status.toUpperCase()"/>
+
+                                                </span>
+
+                                            </td>
+
+                                            <td class="text-end" style="min-width: 280px;">
+
+                                                <div class="d-flex align-items-center justify-content-end gap-2">
+
+                                                    <!-- Actions / Approval Content -->
+
+                                                    <div class="flex-grow-1 text-end">
+
+                                                        <t t-if="!l.partner_id and (l.contact_status === 'new_proposed' or l.contact_status === 'needs_review')">
+
+                                                            <div class="d-flex align-items-center justify-content-end gap-1">
+
+                                                                <t t-if="l.debit > 0">
+
+                                                                    <button class="btn btn-xs btn-outline-primary fw-medium text-nowrap d-inline-flex align-items-center"
+
+                                                                            style="height: 26px; padding: 2px 8px; font-size: 11px;"
+
+                                                                            t-on-click="() => this.approveContactAs(l, 'vendor')"
+
+                                                                            title="Create / Approve as New Vendor">
+
+                                                                        <i class="fa fa-truck me-1"/> + New Vendor
+
+                                                                    </button>
+
+                                                                </t>
+
+                                                                <t t-else="">
+
+                                                                    <button class="btn btn-xs btn-outline-success fw-medium text-nowrap d-inline-flex align-items-center"
+
+                                                                            style="height: 26px; padding: 2px 8px; font-size: 11px;"
+
+                                                                            t-on-click="() => this.approveContactAs(l, 'customer')"
+
+                                                                            title="Create / Approve as New Customer">
+
+                                                                        <i class="fa fa-user-plus me-1"/> + New Customer
+
+                                                                    </button>
+
+                                                                </t>
+
+                                                                <button class="btn btn-xs text-nowrap d-inline-flex align-items-center"
+
+                                                                        style="height: 26px; padding: 2px 8px; font-size: 11px; background-color: #faf5ff; border: 1px solid #a855f7; color: #7e22ce;"
+
+                                                                        t-on-click="() => this.startInlineEdit(l.id, 'partner')"
+
+                                                                        title="Search and assign an existing contact from Odoo">
+
+                                                                    <i class="fa fa-search me-1"/> Link Existing
+
+                                                                </button>
+
+                                                                <button class="btn btn-xs btn-outline-secondary text-nowrap d-inline-flex align-items-center"
+
+                                                                        style="height: 26px; padding: 2px 7px; font-size: 11px;"
+
+                                                                        t-on-click="() => this.markLineNoContact(l)"
+
+                                                                        title="No Contact Needed (Bank charges / transfers)">
+
+                                                                    <i class="fa fa-ban me-1"/> None
+
+                                                                </button>
+
+                                                            </div>
+
+                                                        </t>
+
+                                                        <t t-elif="l.contact_status === 'approved'">
+
+                                                            <span class="badge bg-success-subtle text-success border border-success" style="font-size: 10px;">
+
+                                                                <i class="fa fa-check me-1"/> Approved (<t t-esc="l.approval_target"/>)
+
+                                                            </span>
+
+                                                        </t>
+
+                                                        <t t-elif="l.contact_status === 'existing' or l.partner_id">
+
+                                                            <div class="d-flex align-items-center justify-content-end gap-1">
+
+                                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 10px;">
+
+                                                                    <i class="fa fa-check-circle me-1"/> Assigned (<t t-esc="l.partner_name"/>)
+
+                                                                </span>
+
+                                                                <button class="btn btn-xs btn-link text-primary p-0 ms-1" t-on-click="() => this.startInlineEdit(l.id, 'partner')" title="Change Contact">
+
+                                                                    <i class="fa fa-pencil"/>
+
+                                                                </button>
+
+                                                            </div>
+
+                                                        </t>
+
+                                                        <t t-elif="l.contact_status === 'no_contact_needed'">
+
+                                                            <span class="badge bg-light text-muted border" style="font-size: 10px;">
+
+                                                                <i class="fa fa-ban me-1"/> None
+
+                                                            </span>
+
+                                                        </t>
+
+                                                    </div>
+
+                                                    <!-- Standalone, Always-Visible Delete Button -->
+
+                                                    <button class="btn btn-sm btn-outline-danger p-0 d-inline-flex align-items-center justify-content-center lai-btn-delete-row"
+                                                            style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;"
+                                                            t-on-click="() => this.deleteLine(l.id)"
+                                                            title="Delete Transaction Line">
+                                                        <i class="fa fa-trash-o" style="font-size: 14px;"/>
+                                                    </button>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Split-Screen PDF Viewer Pane -->
+
+                    <t t-if="this.state.showPdfPreview">
+
+                        <div class="lai-pdf-viewer-pane">
+
+                            <div class="lai-pdf-header d-flex justify-content-between align-items-center px-3 py-2 bg-light border-bottom">
+
+                                <div class="d-flex align-items-center gap-2">
+
+                                    <i class="fa fa-file-pdf-o text-danger fs-5"/>
+
+                                    <strong class="text-truncate" style="max-width: 240px;" t-esc="this.state.statement_name || 'Bank Statement PDF'"/>
+
+                                </div>
+
+                                <div class="d-flex align-items-center gap-1">
+
+                                    <button class="btn btn-sm btn-outline-secondary" t-on-click="() => this.reloadPdfPreview()" title="Refresh PDF Document">
+
+                                        <i class="fa fa-refresh"/>
+
+                                    </button>
+
+                                    <a t-attf-href="/gsus_bank_ai/view_pdf/#{this.state.statement_id}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Open Full PDF in New Tab">
+
+                                        <i class="fa fa-external-link"/>
+
+                                    </a>
+
+                                    <button class="btn btn-sm btn-light text-muted" t-on-click="() => this.togglePdfPreview()" title="Close Split View">
+
+                                        <i class="fa fa-times"/>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <div class="lai-pdf-body" style="height: calc(100vh - 280px); min-height: 520px; overflow-x: hidden;">
+
+                                <iframe t-attf-src="/gsus_bank_ai/view_pdf/#{this.state.statement_id}?t=#{this.state.pdfTimestamp || 1}#view=FitH&amp;zoom=page-width&amp;toolbar=1&amp;navpanes=0"
+
+                                        width="100%" height="100%" style="border: none; overflow-x: hidden;" loading="lazy"/>
+
+                            </div>
+
+                        </div>
+
+                    </t>
+
+                </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 VIEW 3: ADVANCED VOUCHERS (Group Clustering & Group Remarks)
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.currentView === 'vouchers'">
+
+                <div class="lai-review-view">
+
+                    <div class="lai-view-header">
+
+                        <div class="lai-header-titles">
+
+                            <h1 class="lai-title">Advanced Vouchers &amp; Group Resolution</h1>
+
+                            <div class="lai-subtitle">Batch assign repetitive transactions to standard ledgers</div>
+
+                        </div>
+
+                        <div class="lai-header-actions">
+
+                            <button class="lai-btn lai-btn-primary" t-on-click="() => this.openGroupModal(0)">
+
+                                <i class="fa fa-magic"/> Resolve by AI Groups
+
+                            </button>
+
+                            <button class="lai-btn lai-btn-secondary" t-on-click="() => this.switchToReview()">
+
+                                <i class="fa fa-arrow-left"/> Back to Review
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Groups Table -->
+
+                    <div class="lai-table-card">
+
+                        <div class="table-responsive">
+
+                            <table class="table lai-native-table" style="min-width: 1350px;">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>Group Key / Pattern</th>
+
+                                        <th>Sample Narration</th>
+
+                                        <th class="text-center">Transactions</th>
+
+                                        <th class="text-end">Total Amount</th>
+
+                                        <th>Suggested Contact</th>
+
+                                        <th>Suggested Ledger</th>
+
+                                        <th class="text-end">Actions</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <t t-if="!this.state.groups.length">
+
+                                        <tr>
+
+                                            <td colspan="7" class="text-center py-4 text-muted">
+
+                                                Click <strong>Resolve by AI Groups</strong> to analyze transaction patterns across this batch.
+
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+                                    <t t-foreach="this.state.groups" t-as="grp" t-key="grp.group_key">
+
+                                        <tr>
+
+                                            <td><strong><t t-esc="grp.group_key"/></strong></td>
+
+                                            <td class="text-muted"><t t-esc="grp.sample_narration"/></td>
+
+                                            <td class="text-center">
+
+                                                <button class="btn btn-xs d-inline-flex align-items-center gap-1 border shadow-none"
+
+                                                        style="padding: 3px 10px; border-radius: 14px; font-size: 12px; background-color: #f1f5f9; cursor: pointer; transition: all 0.15s ease;"
+
+                                                        t-on-click="() => this.toggleExpandGroup(grp.group_key)"
+
+                                                        t-att-title="this.isGroupExpanded(grp.group_key) ? 'Click to hide transactions' : 'Click to view individual transactions in this group'">
+
+                                                    <i t-attf-class="fa #{this.isGroupExpanded(grp.group_key) ? 'fa-chevron-down text-primary' : 'fa-chevron-right text-muted'}" style="font-size: 9px;"/>
+
+                                                    <strong t-attf-class="#{this.isGroupExpanded(grp.group_key) ? 'text-primary' : 'text-dark'}"><t t-esc="grp.count"/></strong>
+
+                                                </button>
+
+                                            </td>
+
+                                            <td class="text-end fw-bold">₹ <t t-esc="this.formatAmount(grp.total_amount)"/></td>
+
+                                            <td style="min-width: 170px;">
+
+                                                <t t-if="grp._isEditing">
+
+                                                    <div class="d-flex align-items-center gap-1" t-on-click.stop="">
+
+                                                        <input type="text" class="form-control form-control-sm"
+
+                                                               t-att-value="grp._tempName"
+
+                                                               t-on-input="(ev) => grp._tempName = ev.target.value"
+
+                                                               t-on-keydown="(ev) => this.onGroupContactKeyDown(ev, grp)"
+
+                                                               t-on-blur="() => this.saveGroupContactName(grp)"
+
+                                                               autofocus="true"/>
+
+                                                        <button class="btn btn-xs btn-outline-success" t-on-click="() => this.saveGroupContactName(grp)" title="Save Name">
+
+                                                            <i class="fa fa-check"/>
+
+                                                        </button>
+
+                                                        <button class="btn btn-xs btn-outline-secondary" t-on-click="() => this.cancelEditingGroupContact(grp)" title="Cancel">
+
+                                                            <i class="fa fa-times"/>
+
+                                                        </button>
+
+                                                    </div>
+
+                                                </t>
+
+                                                <t t-else="">
+
+                                                    <div class="d-flex align-items-center justify-content-between p-1 rounded"
+
+                                                         style="cursor: pointer; border: 1px dashed #d1d5db; background-color: #fdfdfd;"
+
+                                                         t-on-click="() => this.startEditingGroupContact(grp)"
+
+                                                         title="Click to fix contact name spelling">
+
+                                                        <span class="fw-semibold text-dark"><t t-esc="grp.suggested_partner || grp.group_key || '-'"/></span>
+
+                                                        <i class="fa fa-pencil text-muted ms-2" style="font-size: 11px;"/>
+
+                                                    </div>
+
+                                                </t>
+
+                                            </td>
+
+                                            <td><t t-esc="grp.suggested_account || '-'"/></td>
+
+                                            <td class="text-end">
+
+                                                <t t-if="grp.contact_status === 'approved'">
+
+                                                    <div class="d-flex align-items-center justify-content-end gap-1">
+
+                                                        <span class="badge bg-success-subtle text-success border border-success py-1 px-2" style="font-size: 11px;">
+
+                                                            <i class="fa fa-user-plus me-1"/> Approved New (<t t-esc="grp.suggested_partner || (grp.approval_target || grp.primary_type).toUpperCase()"/>)
+
+                                                        </span>
+
+                                                        <button class="btn btn-xs btn-outline-secondary ms-1" t-on-click="() => this.openGroupModal(this.state.groups.indexOf(grp))" title="Change Assignment">
+
+                                                            <i class="fa fa-pencil"/>
+
+                                                        </button>
+
+                                                    </div>
+
+                                                </t>
+
+                                                <t t-elif="grp.contact_status === 'existing' or grp.partner_id">
+
+                                                    <div class="d-flex align-items-center justify-content-end gap-1">
+
+                                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle py-1 px-2" style="font-size: 11px;">
+
+                                                            <i class="fa fa-check-circle me-1"/> Assigned (<t t-esc="grp.suggested_partner"/>)
+
+                                                        </span>
+
+                                                        <button class="btn btn-xs btn-outline-secondary ms-1" t-on-click="() => this.openGroupModal(this.state.groups.indexOf(grp))" title="Change Assignment">
+
+                                                            <i class="fa fa-pencil"/>
+
+                                                        </button>
+
+                                                    </div>
+
+                                                </t>
+
+                                                <t t-else="">
+
+                                                    <div class="d-flex flex-column align-items-end gap-1">
+
+                                                        <div class="d-flex align-items-center gap-1">
+
+                                                            <t t-if="grp.primary_type === 'vendor'">
+
+                                                                <button class="btn btn-xs btn-outline-primary fw-medium" t-on-click="() => this.approveGroupAs(grp, 'vendor')" title="Approve all transactions in this group as a New Vendor">
+
+                                                                    <i class="fa fa-truck me-1"/> Approve Vendor
+
+                                                                </button>
+
+                                                                <button class="btn btn-xs btn-outline-secondary" t-on-click="() => this.approveGroupAs(grp, 'customer')" title="Override: Approve as Customer">
+
+                                                                    <i class="fa fa-user-plus"/>
+
+                                                                </button>
+
+                                                            </t>
+
+                                                            <t t-else="">
+
+                                                                <button class="btn btn-xs btn-outline-success fw-medium" t-on-click="() => this.approveGroupAs(grp, 'customer')" title="Approve all transactions in this group as a New Customer">
+
+                                                                    <i class="fa fa-user-plus me-1"/> Approve Customer
+
+                                                                </button>
+
+                                                                <button class="btn btn-xs btn-outline-secondary" t-on-click="() => this.approveGroupAs(grp, 'vendor')" title="Override: Approve as Vendor">
+
+                                                                    <i class="fa fa-truck"/>
+
+                                                                </button>
+
+                                                            </t>
+
+                                                        </div>
+
+                                                        <button class="btn btn-xs btn-primary fw-medium" t-on-click="() => this.openGroupModal(this.state.groups.indexOf(grp))">
+
+                                                            <i class="fa fa-link me-1"/> Assign Existing
+
+                                                        </button>
+
+                                                    </div>
+
+                                                </t>
+
+                                            </td>
+
+                                        </tr>
+
+                                        <t t-if="this.isGroupExpanded(grp.group_key)">
+
+                                            <tr class="lai-group-details-row">
+
+                                                <td colspan="7" class="p-3" style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+
+                                                    <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+
+                                                        <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center border-bottom">
+
+                                                            <div class="d-flex align-items-center gap-2">
+
+                                                                <i class="fa fa-list-ul text-primary"/>
+
+                                                                <span class="fw-bold text-dark" style="font-size: 13px;">
+
+                                                                    Transactions in Group: <span class="text-primary"><t t-esc="grp.group_key"/></span>
+
+                                                                </span>
+
+                                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 11px;">
+
+                                                                    <t t-esc="grp.count"/> lines · Total: ₹ <t t-esc="this.formatAmount(grp.total_amount)"/>
+
+                                                                </span>
+
+                                                            </div>
+
+                                                            <button class="btn btn-xs btn-outline-primary d-inline-flex align-items-center gap-1"
+
+                                                                    t-on-click="() => this.viewGroupInReview(grp)"
+
+                                                                    title="Open these lines in the full Review Transactions table">
+
+                                                                <i class="fa fa-external-link"/> Open in Review Transactions
+
+                                                            </button>
+
+                                                        </div>
+
+                                                        <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+
+                                                            <table class="table table-sm table-hover align-middle mb-0" style="font-size: 12px; background: #ffffff;">
+
+                                                                <thead class="table-light text-muted" style="position: sticky; top: 0; z-index: 1;">
+
+                                                                    <tr>
+
+                                                                        <th style="width: 95px;">Date</th>
+
+                                                                        <th style="width: 140px;">Reference</th>
+
+                                                                        <th>Narration</th>
+
+                                                                        <th class="text-end" style="width: 110px;">Debit</th>
+
+                                                                        <th class="text-end" style="width: 110px;">Credit</th>
+
+                                                                        <th style="width: 160px;">Contact</th>
+
+                                                                        <th style="width: 100px;" class="text-center">Status</th>
+
+                                                                    </tr>
+
+                                                                </thead>
+
+                                                                <tbody>
+
+                                                                    <t t-set="gLines" t-value="this.getGroupLines(grp)"/>
+
+                                                                    <t t-if="!gLines.length">
+
+                                                                        <tr>
+
+                                                                            <td colspan="7" class="text-center py-3 text-muted">
+
+                                                                                <i class="fa fa-spinner fa-spin me-1"/> Loading transaction lines...
+
+                                                                            </td>
+
+                                                                        </tr>
+
+                                                                    </t>
+
+                                                                    <t t-foreach="gLines" t-as="l" t-key="l.id">
+
+                                                                        <tr>
+
+                                                                            <td class="text-nowrap"><t t-esc="l.date"/></td>
+
+                                                                            <td class="font-monospace text-muted" style="font-size: 11px;"><t t-esc="l.reference || '-'"/></td>
+
+                                                                            <td><t t-esc="l.narration"/></td>
+
+                                                                            <td class="text-end text-danger fw-semibold">
+
+                                                                                <t t-if="l.debit > 0">₹ <t t-esc="this.formatAmount(l.debit)"/></t>
+
+                                                                                <t t-else="">-</t>
+
+                                                                            </td>
+
+                                                                            <td class="text-end text-success fw-semibold">
+
+                                                                                <t t-if="l.credit > 0">₹ <t t-esc="this.formatAmount(l.credit)"/></t>
+
+                                                                                <t t-else="">-</t>
+
+                                                                            </td>
+
+                                                                            <td>
+
+                                                                                <span class="text-truncate d-inline-block" style="max-width: 150px;" t-att-title="l.partner_name || l.proposed_contact_name || '-'">
+
+                                                                                    <t t-esc="l.partner_name || l.proposed_contact_name || '-'"/>
+
+                                                                                </span>
+
+                                                                            </td>
+
+                                                                            <td class="text-center">
+
+                                                                                <span t-attf-class="badge text-white fw-semibold #{l.status === 'reviewed' ? 'bg-success' : (l.status === 'suggested' ? 'bg-primary' : 'bg-secondary')}" style="font-size: 10px;">
+
+                                                                                    <t t-esc="l.status.toUpperCase()"/>
+
+                                                                                </span>
+
+                                                                            </td>
+
+                                                                        </tr>
+
+                                                                    </t>
+
+                                                                </tbody>
+
+                                                            </table>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </td>
+
+                                            </tr>
+
+                                        </t>
+
+                                    </t>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 VIEW 4: INGESTION STUDIO (Upload & Bank Detection)
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.currentView === 'upload'">
+
+                <div class="lai-upload-container">
+
+                    <!-- Top Breadcrumb & Action Header -->
+
+                    <div class="lai-upload-topbar">
+
+                        <div class="lai-upload-breadcrumb">
+
+                            <span class="lai-crumb-current" style="font-weight: 700; font-size: 15px;">Upload Bank Statement</span>
+
+                        </div>
+
+                        <div class="lai-upload-topbar-actions">
+
+                            <button class="lai-btn lai-btn-secondary" t-on-click="() => this.switchToDashboard()">
+
+                                <i class="fa fa-arrow-left me-1"/> Back to Dashboard
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="lai-upload-view">
+
+                        <div class="lai-upload-box">
+
+                        <div class="lai-logo-icon" style="width: 52px; height: 52px; font-size: 26px; background-color: var(--odoo-primary); color: #ffffff !important; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                            <i class="fa fa-cloud-upload" style="color: #ffffff !important; font-size: 26px;"/>
+                        </div>
+
+                        <div>
+
+                            <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: #212529;">Upload Bank Statement</h2>
+
+                            <p class="text-muted mb-0" style="font-size: 13px;">Upload any Indian or International bank statement (PDF, CSV, or Image)</p>
+
+                        </div>
+
+                        <!-- Dropzone with Native Full-Overlay Transparent File Input -->
+
+                        <div class="lai-dropzone"
+
+                             t-on-drop="(ev) => this.handleDrop(ev)" t-on-dragover="(ev) => this.handleDragOver(ev)">
+
+                            <input type="file" id="lai_file_input" class="lai-file-input-native" accept=".pdf,.csv,.png,.jpg,.jpeg"
+
+                                   t-on-change="(ev) => this.handleFileInput(ev)"/>
+
+                            <i class="fa fa-file-text-o fa-3x text-muted mb-2"/>
+
+                            <div class="fw-bold text-dark">Click or drag &amp; drop your statement here</div>
+
+                            <div class="text-muted" style="font-size: 11px;">Supports State Bank of India, Axis, HDFC, ICICI, Canara, etc.</div>
+
+                        </div>
+
+                        <!-- Selected File Info & Auto-detection -->
+
+                        <t t-if="this.state.uploadFileBase64">
+
+                            <div class="w-100 p-3 bg-light border rounded text-start" style="font-size: 12.5px;">
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                    <strong><i class="fa fa-file-pdf-o text-danger me-1"/> <t t-esc="this.state.uploadFileName"/></strong>
+
+                                    <button class="btn btn-sm btn-link text-danger p-0" t-on-click="() => this.removeUploadedFile()">
+
+                                                    <i class="fa fa-trash-o me-1"/> Remove
+
+                                                </button>
+
+                                </div>
+
+                                <div class="text-muted mb-2">Size: <t t-esc="this.state.uploadFileSizeKb"/> KB | Pages: <t t-esc="this.state.uploadPagesCount || 1"/></div>
+
+                                <!-- Bank Auto-Detection Badge -->
+
+                                <t t-if="this.state.detectedBankName">
+
+                                    <div class="p-2 mb-2 bg-success-subtle text-success rounded border border-success-subtle d-flex align-items-center gap-2">
+
+                                        <i class="fa fa-check-circle"/>
+
+                                        <span>Detected: <strong><t t-esc="this.state.detectedBankName"/></strong></span>
+
+                                    </div>
+
+                                </t>
+
+                                <!-- Password Field (Shown ONLY if Encrypted) -->
+
+                                <t t-if="this.state.showPasswordField">
+
+                                    <div class="p-2 bg-warning-subtle text-warning-emphasis rounded border border-warning-subtle mb-2">
+
+                                        <label class="fw-bold mb-1"><i class="fa fa-lock me-1"/> Password-Protected PDF</label>
+
+                                        <input type="password" class="form-control form-control-sm" placeholder="Enter PDF password..."
+
+                                               t-on-input="(ev) => this.onPasswordInput(ev.target.value)"/>
+
+                                    </div>
+
+                                </t>
+
+                                <!-- Duplicate Statement Warning Alert -->
+
+                                <t t-if="this.state.isDuplicateDetected">
+
+                                    <div class="p-2 mb-2 bg-warning-subtle text-warning-emphasis rounded border border-warning d-flex align-items-center gap-2">
+
+                                        <i class="fa fa-exclamation-triangle text-warning"/>
+
+                                        <span><strong><t t-esc="this.state.duplicateWarning"/></strong></span>
+
+                                    </div>
+
+                                </t>
+
+                                <button class="btn btn-primary w-100 mt-2" t-on-click="() => this.startProcessing()">
+
+                                    <i class="fa fa-bolt me-1"/> Process Statement with AI
+
+                                </button>
+
+                            </div>
+
+                        </t>
+
+                    </div>
+
+                </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 VIEW 5: PROCESSING SCREEN
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.currentView === 'processing'">
+
+                <div class="lai-upload-view">
+
+                    <div class="lai-upload-box" style="width: 520px;">
+
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"/>
+
+                        <h3 class="fw-bold mb-0">Processing Statement</h3>
+
+                        <div class="text-muted" style="font-size: 12px;">Multimodal AI extraction in progress...</div>
+
+                        <div class="w-100 bg-light p-3 border rounded text-start font-monospace" style="font-size: 11px; max-height: 200px; overflow-y: auto;">
+
+                            <t t-foreach="this.state.processingLogs" t-as="log" t-key="log">
+
+                                <div class="text-success"><i class="fa fa-angle-right me-1"/> <t t-esc="log"/></div>
+
+                            </t>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 MODAL 0: RESOLVE BY AI GROUPS MODAL
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.isGroupModalOpen and this.activeGroup">
+
+                <div class="lai-modal-backdrop" t-on-click="() => this.closeGroupModal()">
+
+                    <div class="lai-modal-card" style="width: 580px;" t-on-click.stop="() => this.closeGroupDropdowns()">
+
+                        <div class="lai-modal-header">
+
+                            <h3 class="lai-modal-title">
+
+                                <i class="fa fa-cubes me-1"/> Resolve AI Group (<t t-esc="this.state.currentGroupIndex + 1"/> of <t t-esc="this.state.groups.length"/>)
+
+                            </h3>
+
+                            <button class="btn-close" t-on-click="() => this.closeGroupModal()"/>
+
+                        </div>
+
+                        <div class="lai-modal-body">
+
+                            <!-- Group Summary Box -->
+
+                            <div class="p-3 bg-light rounded border mb-3">
+
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+
+                                    <strong class="text-primary fs-6"><t t-esc="this.activeGroup.group_key"/></strong>
+
+                                    <span class="badge bg-secondary text-white"><t t-esc="this.activeGroup.count"/> Transactions</span>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between text-muted" style="font-size: 12px;">
+
+                                    <span>Total Value: <strong>₹<t t-esc="this.formatAmount(this.activeGroup.total_amount)"/></strong></span>
+
+                                    <span>Mode: <strong t-esc="this.activeGroup.payment_mode"/></span>
+
+                                </div>
+
+                                <div class="text-muted mt-1 fst-italic" style="font-size: 11px;">
+
+                                    Sample: "<t t-esc="this.activeGroup.sample_narration"/>"
+
+                                </div>
+
+                            </div>
+
+                            <!-- Assign Contact / Partner -->
+
+                            <div class="lai-form-group position-relative">
+
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+
+                                    <label class="mb-0 fw-semibold">Assigned Contact / Partner</label>
+
+                                    <t t-if="this.state.selectedPartnerName">
+
+                                        <button class="btn btn-link btn-sm text-danger p-0" style="font-size: 11px; text-decoration: none;"
+
+                                                t-on-click="() => this.clearGroupPartner()">
+
+                                            <i class="fa fa-times me-1"/>Clear
+
+                                        </button>
+
+                                    </t>
+
+                                </div>
+
+                                <div class="input-group input-group-sm" t-on-click.stop="">
+
+                                    <input type="text" class="form-control" placeholder="Search or pick contact..."
+
+                                           t-att-value="this.state.selectedPartnerName"
+
+                                           t-on-click="() => this.openGroupPartnerDropdown()"
+
+                                           t-on-input="(ev) => this.searchPartnersLive(ev)"
+
+                                           t-on-keydown="(ev) => this.onSuggestionKeyDown(ev, 'partner', null, 'group')"/>
+
+                                    <button class="btn btn-outline-secondary" type="button"
+
+                                            t-on-click.stop="() => this.togglePartnerDropdown()" title="Browse contacts">
+
+                                        <i class="fa fa-chevron-down" style="font-size: 10px;"/>
+
+                                    </button>
+
+                                </div>
+
+                                <t t-if="this.state.selectedPartnerName">
+
+                                    <div class="badge bg-primary-subtle text-primary border border-primary-subtle mt-1 d-inline-flex align-items-center gap-1">
+
+                                        <i class="fa fa-user me-1"/> Selected: <strong t-esc="this.state.selectedPartnerName"/>
+
+                                    </div>
+
+                                </t>
+
+                                <t t-if="this.state.showGroupPartnerDropdown and this.state.partnerSearchResults.length > 0">
+
+                                    <div class="dropdown-menu show w-100 shadow border rounded mt-1"
+
+                                         style="max-height: 220px; overflow-y: auto; z-index: 1050; position: absolute; top: calc(100% - 2px); left: 0;">
+
+                                        <t t-foreach="this.state.partnerSearchResults" t-as="p" t-key="p.id">
+
+                                            <div t-attf-class="dropdown-item d-flex justify-content-between align-items-center py-2 px-3 #{p_index === this.state.highlightedSuggestionIndex ? 'active' : ''}"
+
+                                                 style="cursor: pointer;"
+
+                                                 t-on-click="() => this.selectGroupPartner(p)">
+
+                                                <span class="fw-medium"><i class="fa fa-user-o me-2 text-muted"/><t t-esc="p.name"/></span>
+
+                                                <span class="badge bg-light text-muted border">#<t t-esc="p.id"/></span>
+
+                                            </div>
+
+                                        </t>
+
+                                    </div>
+
+                                </t>
+
+                            </div>
+
+                            <!-- Assign Ledger / Account -->
+
+                            <div class="lai-form-group position-relative">
+
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+
+                                    <label class="mb-0 fw-semibold">Assigned Ledger / Account</label>
+
+                                    <t t-if="this.state.selectedAccountName">
+
+                                        <button class="btn btn-link btn-sm text-danger p-0" style="font-size: 11px; text-decoration: none;"
+
+                                                t-on-click="() => this.clearGroupAccount()">
+
+                                            <i class="fa fa-times me-1"/>Clear
+
+                                        </button>
+
+                                    </t>
+
+                                </div>
+
+                                <div class="input-group input-group-sm" t-on-click.stop="">
+
+                                    <input type="text" class="form-control" placeholder="Search account code or name..."
+
+                                           t-att-value="this.state.selectedAccountName"
+
+                                           t-on-click="() => this.openGroupAccountDropdown()"
+
+                                           t-on-input="(ev) => this.searchAccountsLive(ev)"
+
+                                           t-on-keydown="(ev) => this.onSuggestionKeyDown(ev, 'account', null, 'group')"/>
+
+                                    <button class="btn btn-outline-secondary" type="button"
+
+                                            t-on-click.stop="() => this.toggleAccountDropdown()" title="Browse accounts">
+
+                                        <i class="fa fa-chevron-down" style="font-size: 10px;"/>
+
+                                    </button>
+
+                                </div>
+
+                                <t t-if="this.state.selectedAccountName">
+
+                                    <div class="badge bg-primary-subtle text-primary border border-primary-subtle mt-1 d-inline-flex align-items-center gap-1">
+
+                                        <i class="fa fa-book me-1"/> Selected: <strong t-esc="this.state.selectedAccountName"/>
+
+                                    </div>
+
+                                </t>
+
+                                <t t-if="this.state.showGroupAccountDropdown and this.state.accountSearchResults.length > 0">
+
+                                    <div class="dropdown-menu show w-100 shadow border rounded mt-1"
+
+                                         style="max-height: 220px; overflow-y: auto; z-index: 1050; position: absolute; top: calc(100% - 2px); left: 0;">
+
+                                        <t t-foreach="this.state.accountSearchResults" t-as="a" t-key="a.id">
+
+                                            <div t-attf-class="dropdown-item d-flex justify-content-between align-items-center py-2 px-3 #{a_index === this.state.highlightedSuggestionIndex ? 'active' : ''}"
+
+                                                 style="cursor: pointer;"
+
+                                                 t-on-click="() => this.selectGroupAccount(a)">
+
+                                                <span class="fw-medium"><i class="fa fa-book text-muted me-2"/><t t-esc="a.code ? a.code + ' ' : ''"/><t t-esc="a.name"/></span>
+
+                                                <span class="badge bg-light text-muted border">#<t t-esc="a.id"/></span>
+
+                                            </div>
+
+                                        </t>
+
+                                    </div>
+
+                                </t>
+
+                            </div>
+
+                            <!-- Group Remark -->
+
+                            <div class="lai-form-group">
+
+                                <label>Group Remark</label>
+
+                                <input type="text" class="form-control form-control-sm" placeholder="e.g. Monthly vendor settlement..."
+
+                                       t-att-value="this.state.groupRemarkText"
+
+                                       t-on-input="(ev) => this.state.groupRemarkText = ev.target.value"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lai-modal-footer d-flex justify-content-between">
+
+                            <div class="d-flex gap-1">
+
+                                <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.prevGroup()" t-att-disabled="this.state.currentGroupIndex === 0">
+
+                                    <i class="fa fa-chevron-left"/> Prev
+
+                                </button>
+
+                                <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.nextGroup()" t-att-disabled="this.state.currentGroupIndex >= this.state.groups.length - 1">
+
+                                    Next <i class="fa fa-chevron-right"/>
+
+                                </button>
+
+                            </div>
+
+                            <div class="d-flex gap-1">
+
+                                <button class="btn btn-secondary btn-sm" t-on-click="() => this.closeGroupModal()"><i class="fa fa-times me-1"/> Cancel</button>
+
+                                <button class="btn btn-primary btn-sm" t-on-click="() => this.resolveCurrentGroup()" t-att-disabled="this.state.isResolvingGroup">
+
+                                    <i class="fa fa-check me-1"/> <t t-esc="this.state.isResolvingGroup ? 'Applying...' : 'Apply to All'"/>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 MODAL 1: AI PROVIDER CONFIGURATION & TEST PING
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.isProviderModalOpen">
+
+                <div class="lai-modal-backdrop" t-on-click="() => this.closeProviderModal()">
+
+                    <div class="lai-modal-card" t-on-click.stop="">
+
+                        <div class="lai-modal-header">
+
+                            <h3 class="lai-modal-title"><i class="fa fa-microchip me-1"/> AI Provider Configuration</h3>
+
+                            <button class="btn-close" t-on-click="() => this.closeProviderModal()"/>
+
+                        </div>
+
+                        <div class="lai-modal-body">
+
+                            <!-- 1. Provider Engine -->
+
+                            <div class="lai-form-group">
+
+                                <label>1. Provider Engine</label>
+
+                                <select class="form-select form-select-sm" t-on-change="(ev) => this.onProviderTypeChange(ev)">
+
+                                    <!-- <option value="native" t-att-selected="this.state.activeProviderType === 'native'">Native Python Engine (100% Offline · Zero Setup · Instant)</option> -->
+
+                                    <option value="gemini" t-att-selected="this.state.activeProviderType === 'gemini'">Google Gemini (Multimodal Vision Recommended)</option>
+
+                                    <option value="openai" t-att-selected="this.state.activeProviderType === 'openai'">OpenAI (GPT-4o &amp; GPT-4o-mini Vision)</option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- 2. Status / API Secret Key -->
+
+                            <t t-if="this.state.activeProviderType === 'native'">
+
+                                <div class="lai-form-group">
+
+                                    <label>2. Engine Setup Status</label>
+
+                                    <div class="p-2 border rounded bg-light d-flex align-items-center justify-content-between">
+
+                                        <div class="d-flex align-items-center">
+
+                                            <span class="badge bg-success me-2">
+
+                                                <i class="fa fa-bolt me-1"/> 100% Ready
+
+                                            </span>
+
+                                            <span class="text-success fw-bold" style="font-size: 12px;">Zero Downloads · 100% Offline · Free Forever</span>
+
+                                        </div>
+
+                                        <span class="text-muted" style="font-size: 11px;">Runs locally inside Python</span>
+
+                                    </div>
+
+                                    <div class="text-muted mt-1" style="font-size: 11px;">
+
+                                        <i class="fa fa-shield text-success me-1"/> No API Key needed. Processes netbanking PDFs, CSV, and Excel with running balance validation.
+
+                                    </div>
+
+                                </div>
+
+                            </t>
+
+                            <t t-else="">
+
+                                <div class="lai-form-group">
+
+                                    <label>2. API Secret Key</label>
+
+                                    <input type="password" class="form-control form-control-sm" placeholder="Paste your API key here..."
+
+                                           t-att-value="this.state.providerApiKey"
+
+                                           t-on-input="(ev) => this.state.providerApiKey = ev.target.value"/>
+
+                                    <div class="text-muted" style="font-size: 11px;">
+
+                                        <i class="fa fa-shield me-1"/> Keys are stored with AES-256 vault encryption.
+
+                                    </div>
+
+                                </div>
+
+                            </t>
+
+                            <!-- 3. Model Version (Discovered from API key) -->
+
+                            <div class="lai-form-group">
+
+                                <label class="d-flex justify-content-between align-items-center">
+
+                                    <span>3. Model Version</span>
+
+                                    <t t-if="this.state.availableModels and this.state.availableModels.length > 0">
+
+                                        <span class="badge bg-success-subtle text-success" style="font-size: 10px;">
+
+                                            <i class="fa fa-check-circle me-1"/> <t t-esc="this.state.availableModels.length"/> supported models verified
+
+                                        </span>
+
+                                    </t>
+
+                                </label>
+
+                                <t t-if="this.state.availableModels and this.state.availableModels.length > 0">
+
+                                    <select class="form-select form-select-sm"
+
+                                            t-on-change="(ev) => this.state.providerModelName = ev.target.value">
+
+                                        <t t-foreach="this.state.availableModels" t-as="m" t-key="m.code">
+
+                                            <option t-att-value="m.code" t-att-selected="this.state.providerModelName === m.code">
+
+                                                <t t-esc="m.name"/>
+
+                                            </option>
+
+                                        </t>
+
+                                    </select>
+
+                                </t>
+
+                                <t t-else="">
+
+                                    <input type="text" class="form-control form-control-sm bg-light text-muted"
+
+                                           placeholder="Enter API Key and click 'Test Connection (Ping)' below to load models..."
+
+                                           readonly="readonly"/>
+
+                                    <div class="text-muted mt-1" style="font-size: 11px;">
+
+                                        <i class="fa fa-info-circle me-1 text-primary"/> Click <strong>"Test Connection (Ping)"</strong> below to verify your key and populate available models.
+
+                                    </div>
+
+                                </t>
+
+                            </div>
+
+                            <!-- Ping Test Result -->
+
+                            <t t-if="this.state.pingResult">
+
+                                <div t-attf-class="p-2 rounded border #{this.state.pingResult.success ? 'bg-success-subtle text-success border-success-subtle' : 'bg-danger-subtle text-danger border-danger-subtle'}"
+
+                                     style="font-size: 12px;">
+
+                                    <i t-attf-class="fa #{this.state.pingResult.success ? 'fa-check-circle' : 'fa-exclamation-circle'} me-1"/>
+
+                                    <t t-esc="this.state.pingResult.message || this.state.pingResult.error"/>
+
+                                </div>
+
+                            </t>
+
+                        </div>
+
+                        <div class="lai-modal-footer">
+
+                            <button class="btn btn-outline-primary btn-sm" t-on-click="() => this.testProviderPing()" t-att-disabled="this.state.isTestingPing">
+
+                                <i class="fa fa-wifi me-1"/> <t t-esc="this.state.isTestingPing ? 'Testing...' : 'Test Connection (Ping)'"/>
+
+                            </button>
+
+                            <button class="btn btn-secondary btn-sm" t-on-click="() => this.closeProviderModal()"><i class="fa fa-times me-1"/> Cancel</button>
+
+                            <button class="btn btn-primary btn-sm" t-on-click="() => this.saveProviderConfig()"><i class="fa fa-floppy-o me-1"/> Save Configuration</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 MODAL 3: BULK ASSIGN LEDGER & CONTACT
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.isBulkAssignModalOpen">
+
+                <div class="lai-modal-backdrop" t-on-click="() => this.closeBulkAssignModal()">
+
+                    <div class="lai-modal-card" t-on-click.stop="">
+
+                        <div class="lai-modal-header">
+
+                            <h3 class="lai-modal-title"><i class="fa fa-pencil-square-o me-1"/> Bulk Assign (<t t-esc="this.state.selectedLineIds.length"/> items)</h3>
+
+                            <button class="btn-close" t-on-click="() => this.closeBulkAssignModal()"/>
+
+                        </div>
+
+                        <div class="lai-modal-body">
+
+                            <!-- Search Contact -->
+
+                            <div class="lai-form-group position-relative mb-3">
+
+                                <label class="fw-semibold mb-1">Assigned Contact / Partner</label>
+
+                                <div class="input-group input-group-sm">
+
+                                    <input type="text" class="form-control" placeholder="Search contact name..."
+
+                                           t-att-value="this.state.bulkPartnerName"
+
+                                           t-on-input="(ev) => this.onBulkPartnerInput(ev)"
+
+                                           t-on-keydown="(ev) => this.onSuggestionKeyDown(ev, 'partner', null, 'bulk')"/>
+
+                                    <t t-if="this.state.bulkPartnerName">
+
+                                        <button class="btn btn-outline-secondary" type="button" t-on-click="() => this.clearBulkPartner()" title="Clear selection">
+
+                                            <i class="fa fa-times"/>
+
+                                        </button>
+
+                                    </t>
+
+                                </div>
+
+                                <t t-if="this.state.bulkPartnerName">
+
+                                    <div class="badge bg-primary text-white w-100 py-2 px-3 mt-1 d-flex align-items-center justify-content-center gap-1 shadow-sm rounded-2"
+
+                                         style="color: #ffffff !important; font-size: 12px; font-weight: 600; letter-spacing: 0.3px;">
+
+                                        <i class="fa fa-check-circle me-1" style="color: #ffffff !important;"/> Selected: <span class="fw-bold" style="color: #ffffff !important;"><t t-esc="this.state.bulkPartnerName"/></span>
+
+                                    </div>
+
+                                </t>
+
+                                <t t-if="this.state.partnerSearchResults.length > 0">
+
+                                    <div class="inline-search-dropdown position-relative w-100" style="max-height: 180px; overflow-y: auto;">
+
+                                        <t t-foreach="this.state.partnerSearchResults" t-as="p" t-key="p.id">
+
+                                            <div t-attf-class="inline-dropdown-item #{p_index === this.state.highlightedSuggestionIndex ? 'active' : ''}"
+
+                                                 t-on-click="() => this.selectBulkPartner(p)">
+
+                                                <t t-esc="p.name"/>
+
+                                            </div>
+
+                                        </t>
+
+                                    </div>
+
+                                </t>
+
+                            </div>
+
+                            <!-- Search Ledger -->
+
+                            <div class="lai-form-group position-relative mb-2">
+
+                                <label class="fw-semibold mb-1">Assigned Ledger / Account</label>
+
+                                <div class="input-group input-group-sm">
+
+                                    <input type="text" class="form-control" placeholder="Search account code or name..."
+
+                                           t-att-value="this.state.bulkAccountName"
+
+                                           t-on-input="(ev) => this.onBulkAccountInput(ev)"
+
+                                           t-on-keydown="(ev) => this.onSuggestionKeyDown(ev, 'account', null, 'bulk')"/>
+
+                                    <t t-if="this.state.bulkAccountName">
+
+                                        <button class="btn btn-outline-secondary" type="button" t-on-click="() => this.clearBulkAccount()" title="Clear selection">
+
+                                            <i class="fa fa-times"/>
+
+                                        </button>
+
+                                    </t>
+
+                                </div>
+
+                                <t t-if="this.state.bulkAccountName">
+
+                                    <div class="badge bg-primary text-white w-100 py-2 px-3 mt-1 d-flex align-items-center justify-content-center gap-1 shadow-sm rounded-2"
+
+                                         style="color: #ffffff !important; font-size: 12px; font-weight: 600; letter-spacing: 0.3px;">
+
+                                        <i class="fa fa-check-circle me-1" style="color: #ffffff !important;"/> Selected: <span class="fw-bold" style="color: #ffffff !important;"><t t-esc="this.state.bulkAccountName"/></span>
+
+                                    </div>
+
+                                </t>
+
+                                <t t-if="this.state.accountSearchResults.length > 0">
+
+                                    <div class="inline-search-dropdown position-relative w-100" style="max-height: 180px; overflow-y: auto;">
+
+                                        <t t-foreach="this.state.accountSearchResults" t-as="a" t-key="a.id">
+
+                                            <div t-attf-class="inline-dropdown-item #{a_index === this.state.highlightedSuggestionIndex ? 'active' : ''}"
+
+                                                 t-on-click="() => this.selectBulkAccount(a)">
+
+                                                <t t-esc="a.code ? a.code + ' ' : ''"/><t t-esc="a.name"/>
+
+                                            </div>
+
+                                        </t>
+
+                                    </div>
+
+                                </t>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lai-modal-footer">
+
+                            <button class="btn btn-secondary btn-sm" t-on-click="() => this.closeBulkAssignModal()"><i class="fa fa-times me-1"/> Cancel</button>
+
+                            <button class="btn btn-primary btn-sm" t-on-click="() => this.executeBulkAssign()"><i class="fa fa-check me-1"/> Apply Bulk Assignment</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 MODAL 4: GROUP REMARK MODAL
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.isGroupRemarkModalOpen">
+
+                <div class="lai-modal-backdrop" t-on-click="() => this.closeGroupRemarkModal()">
+
+                    <div class="lai-modal-card" t-on-click.stop="">
+
+                        <div class="lai-modal-header">
+
+                            <h3 class="lai-modal-title"><i class="fa fa-commenting-o me-1"/> Add Group Remark</h3>
+
+                            <button class="btn-close" t-on-click="() => this.closeGroupRemarkModal()"/>
+
+                        </div>
+
+                        <div class="lai-modal-body">
+
+                            <div class="text-muted" style="font-size: 12px;">
+
+                                Apply custom accounting remark across all transactions matching pattern: <strong><t t-esc="this.state.groupRemarkTargetKey"/></strong>
+
+                            </div>
+
+                            <div class="lai-form-group mt-2">
+
+                                <label>Group Remark</label>
+
+                                <input type="text" class="form-control form-control-sm" placeholder="e.g. Monthly Team Refreshments..."
+
+                                       t-att-value="this.state.groupRemarkInput"
+
+                                       t-on-input="(ev) => this.state.groupRemarkInput = ev.target.value"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lai-modal-footer">
+
+                            <button class="btn btn-secondary btn-sm" t-on-click="() => this.closeGroupRemarkModal()"><i class="fa fa-times me-1"/> Cancel</button>
+
+                            <button class="btn btn-primary btn-sm" t-on-click="() => this.saveGroupRemark()"><i class="fa fa-check me-1"/> Save Remark</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+            <!-- ══════════════════════════════════════════════
+
+                 MODAL 5: MANUAL ADD TRANSACTION
+
+            ══════════════════════════════════════════════ -->
+
+            <t t-if="this.state.isAddTxnModalOpen">
+
+                <div class="lai-modal-backdrop" t-on-click="() => this.state.isAddTxnModalOpen = false">
+
+                    <div class="lai-modal-card" t-on-click.stop="">
+
+                        <div class="lai-modal-header">
+
+                            <h3 class="lai-modal-title"><i class="fa fa-plus me-1"/> Add Manual Transaction</h3>
+
+                            <button class="btn-close" t-on-click="() => this.state.isAddTxnModalOpen = false"/>
+
+                        </div>
+
+                        <div class="lai-modal-body">
+
+                            <div class="lai-form-group">
+
+                                <label>Date</label>
+
+                                <input type="date" class="form-control form-control-sm"
+
+                                       t-att-value="this.state.newTxnDate"
+
+                                       t-on-input="(ev) => this.state.newTxnDate = ev.target.value"/>
+
+                            </div>
+
+                            <div class="lai-form-group">
+
+                                <label>Narration / Description</label>
+
+                                <input type="text" class="form-control form-control-sm" placeholder="Transaction description..."
+
+                                       t-att-value="this.state.newTxnNarration"
+
+                                       t-on-input="(ev) => this.state.newTxnNarration = ev.target.value"/>
+
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-6 lai-form-group">
+
+                                    <label>Debit (Outflow)</label>
+
+                                    <input type="number" step="0.01" class="form-control form-control-sm"
+
+                                           t-att-value="this.state.newTxnDebit"
+
+                                           t-on-input="(ev) => this.state.newTxnDebit = ev.target.value"/>
+
+                                </div>
+
+                                <div class="col-6 lai-form-group">
+
+                                    <label>Credit (Inflow)</label>
+
+                                    <input type="number" step="0.01" class="form-control form-control-sm"
+
+                                           t-att-value="this.state.newTxnCredit"
+
+                                           t-on-input="(ev) => this.state.newTxnCredit = ev.target.value"/>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lai-modal-footer">
+
+                            <button class="btn btn-secondary btn-sm" t-on-click="() => this.state.isAddTxnModalOpen = false"><i class="fa fa-times me-1"/> Cancel</button>
+
+                            <button class="btn btn-primary btn-sm" t-on-click="() => this.submitAddTransaction()"><i class="fa fa-plus me-1"/> Add Transaction</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+        </div>
+
+    </t>
+
+</templates>
+

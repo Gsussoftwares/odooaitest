@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Drop SO/PO voucher maps on upgrade (invoice-only connector). -->
+    <data>
+        <delete model="tally.voucher.map" search="[('move_type', 'in', ['sale_order', 'purchase_order'])]"/>
+    </data>
+</odoo>

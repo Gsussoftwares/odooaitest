@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================
+         Tally Connector — res.config.settings view extension
+    ============================================================ -->
+    <record id="res_config_settings_view_form_tally" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.tally.connector</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Tally Prime Connector" id="tally_connector_settings">
+                    
+                    <setting id="tally_sync_active_setting" help="Automatically sync invoices and bills to Tally when confirmed.">
+                        <field name="tally_sync_active" widget="boolean_toggle"/>
+                    </setting>
+
+                    <setting id="tally_edu_snap_setting" help="For TallyPrime EDU: snap XML voucher/due dates to an allowed day (1st of month). Odoo dates stay unchanged.">
+                        <field name="tally_edu_snap_voucher_dates" widget="boolean_toggle"/>
+                    </setting>
+                    
+                    <setting id="tally_include_inventory_setting" help="Send product lines as Tally inventory entries on posted invoices (requires UoM mapping).">
+                        <field name="tally_include_inventory" widget="boolean_toggle"/>
+                    </setting>
+
+                    <setting id="tally_auto_create_masters_setting" help="Automatically create missing Party Ledgers and Stock Items in Tally.">
+                        <field name="tally_auto_create_masters" widget="boolean_toggle"/>
+                    </setting>
+
+                    <setting id="tally_auto_sync_partner_setting" help="On save: push new or changed customers/vendors to Tally (party ledger).">
+                        <field name="tally_auto_sync_partner" widget="boolean_toggle"/>
+                    </setting>
+
+                    <setting id="tally_auto_sync_product_setting" help="On save: push new or changed Goods products to Tally (stock item).">
+                        <field name="tally_auto_sync_product" widget="boolean_toggle"/>
+                    </setting>
+
+                    <setting id="tally_master_push_gst_setting" help="Map Odoo Tax ID / GSTIN and HSN (when available) into Tally master XML.">
+                        <field name="tally_master_push_gst" widget="boolean_toggle"/>
+                    </setting>
+
+                    <setting id="tally_include_gst_compliance_setting" help="Push IRN and e-Way Bill number to Tally when generated in Odoo (re-sync after e-Invoice / e-Way Bill is created).">
+                        <field name="tally_include_gst_compliance" widget="boolean_toggle"/>
+                    </setting>
+
+                    <setting id="tally_gst_json_export_path_setting" string="GST JSON export folder" help="Optional fallback folder for *_einvoice.json files (slashes in invoice no. become underscores).">
+                        <field name="tally_gst_json_export_path" placeholder="C:\odoo\gst_json_exports"/>
+                    </setting>
+
+                    <setting id="tally_server_url_setting" string="Tally Server URL" help="URL of the Tally Prime XML Server. Default: http://localhost:9000">
+                        <field name="tally_server_url" placeholder="http://localhost:9000"/>
+                    </setting>
+
+                    <setting id="tally_company_setting" string="Tally Company Name" help="Must match the company name in Tally Prime exactly (case-sensitive).">
+                        <field name="tally_company" placeholder="e.g. My Company Pvt. Ltd."/>
+                    </setting>
+
+                    <setting id="tally_stock_group_setting" string="Stock Group for new items" help="Required for product sync: exact name from Tally → Inventory Info → Stock Groups (e.g. Finished Goods). Do not use “Primary” unless that group exists in your Tally company.">
+                        <field name="tally_stock_item_group" placeholder="Exact name from Tally Stock Groups"/>
+                    </setting>
+
+                    <setting id="tally_test_btn_setting">
+                        <button string="🔌 Test Connection to Tally"
+                                name="action_tally_test_connection"
+                                type="object"
+                                class="btn btn-secondary"/>
+                    </setting>
+
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tally Companies menu placed right at the top of Tally Connector menu -->
+    <menuitem id="menu_tally_companies"
+              name="Tally Companies"
+              parent="odoo_tally_connector.menu_tally_connector_root"
+              action="action_tally_company"
+              sequence="1"/>
+
+    <!-- Remove the old single-company Test Connection menu item -->
+    <record id="odoo_tally_connector.menu_tally_test_connection" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

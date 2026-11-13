@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_tally_company_tree" model="ir.ui.view">
+        <field name="name">tally.company.tree</field>
+        <field name="model">tally.company</field>
+        <field name="arch" type="xml">
+            <list string="Tally Prime Companies" decoration-success="connection_status == 'connected'" decoration-danger="connection_status == 'failed'">
+                <field name="name" string="Configuration Name"/>
+                <field name="tally_company_name" string="Tally Company Name"/>
+                <field name="server_url"/>
+                <field name="partner_count"/>
+                <field name="connection_status" widget="badge" decoration-success="connection_status == 'connected'" decoration-danger="connection_status == 'failed'" decoration-muted="connection_status == 'untested'"/>
+                <field name="last_connection_test"/>
+                <field name="active" widget="boolean_toggle"/>
+                <button name="action_test_connection" string="Test Connection" type="object" icon="fa-plug" class="btn btn-sm btn-secondary"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View matching User's Reference Layout -->
+    <record id="view_tally_company_form" model="ir.ui.view">
+        <field name="name">tally.company.form</field>
+        <field name="model">tally.company</field>
+        <field name="arch" type="xml">
+            <form string="Tally Prime Company">
+                <header>
+                    <button name="action_test_connection" string="🔌 Test Connection" type="object" class="btn-primary"/>
+                    <field name="connection_status" widget="statusbar" statusbar_visible="untested,connected,failed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_partners" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="partner_count" string="Partners" widget="statinfo"/>
+                        </button>
+                        <button name="action_view_sync_logs" type="object" class="oe_stat_button" icon="fa-history">
+                            <field name="sync_log_count" string="Sync Logs" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Connected" bg_color="text-bg-success" invisible="connection_status != 'connected'"/>
+                    <widget name="web_ribbon" title="Failed" bg_color="text-bg-danger" invisible="connection_status != 'failed'"/>
+
+                    <div class="oe_title">
+                        <label for="name" string="Configuration Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Main Company"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="TALLY CONNECTION SETTINGS">
+                            <field name="tally_company_name" placeholder="e.g. My Company Pvt. Ltd."/>
+                            <field name="server_url" placeholder="http://localhost:9000"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="STATUS &amp; DIAGNOSTICS">
+                            <field name="last_connection_test"/>
+                            <field name="last_connection_message" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Assigned Partners" name="assigned_partners">
+                            <field name="partner_ids" readonly="1">
+                                <list string="Partners">
+                                    <field name="display_name"/>
+                                    <field name="phone"/>
+                                    <field name="email"/>
+                                    <field name="vat" string="GSTIN / VAT"/>
+                                    <field name="city"/>
+                                    <field name="tally_guid" string="Tally GUID" optional="show"/>
+                                    <field name="tally_last_sync" string="Last Sync" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_tally_company_search" model="ir.ui.view">
+        <field name="name">tally.company.search</field>
+        <field name="model">tally.company</field>
+        <field name="arch" type="xml">
+            <search string="Search Tally Companies">
+                <field name="name"/>
+                <field name="tally_company_name"/>
+                <field name="server_url"/>
+                <filter string="Connected" name="connected" domain="[('connection_status', '=', 'connected')]"/>
+                <filter string="Failed" name="failed" domain="[('connection_status', '=', 'failed')]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tally_company" model="ir.actions.act_window">
+        <field name="name">Tally Prime Companies</field>
+        <field name="res_model">tally.company</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tally_company_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register your first Tally Prime Company connection!
+            </p>
+            <p>
+                Configure the Tally server URL and exact company name as shown in Tally Prime.
+                You can add multiple companies running on the same computer or different machines across your network.
+            </p>
+        </field>
+    </record>
+</odoo>

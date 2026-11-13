@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="gsus_ai.FloatingPanel">
+        <t t-if="this.gsusAiService.isOpen">
+            <!-- Floating bottom-right widget window (No blocking backdrop) -->
+            <div class="o_gsus_ai_floating_panel" t-att-class="{'o_gsus_ai_minimized': this.state.isMinimized, 'o_gsus_ai_dark_mode': this.isDarkMode}">
+                <!-- Floating Window Header (Matching Image 2) -->
+                <div class="o_gsus_ai_fp_header">
+                    <div class="o_gsus_ai_fp_brand" t-on-click="() => this.toggleHistoryDrawer()" title="View conversations">
+                        <img src="/gsus_ai/static/description/icon.png?v=7" class="o_gsus_ai_fp_logo" alt="Odoo AI"/>
+                        <span class="o_gsus_ai_fp_name">Odoo AI</span>
+                        <i class="oi o_gsus_ai_fp_dropdown_icon" data-icon="expand_more"/>
+                    </div>
+                    <div class="o_gsus_ai_fp_controls">
+                        <button class="o_gsus_ai_fp_ctrl_btn" t-on-click="() => this.toggleMinimize()" t-att-title="this.state.isMinimized ? 'Expand' : 'Minimize'">
+                            <i class="oi" t-att-data-icon="this.state.isMinimized ? 'expand_less' : 'remove'"/>
+                        </button>
+                        <button class="o_gsus_ai_fp_ctrl_btn" t-on-click="() => this.openFullScreen()" title="Open Fullscreen Page">
+                            <i class="oi" data-icon="open_in_new"/>
+                        </button>
+                        <button class="o_gsus_ai_fp_ctrl_btn o_gsus_ai_fp_close_btn" t-on-click="() => this.gsusAiService.close()" title="Close">
+                            <i class="oi" data-icon="close"/>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resume Previous Chat Banner (Matching Image 2) -->
+                <t t-if="this.state.showResumeBanner and !this.state.isMinimized">
+                    <div class="o_gsus_ai_resume_banner">
+                        <div class="o_gsus_ai_resume_info" t-on-click="() => this.resumePreviousChat()">
+                            <span class="o_gsus_ai_resume_badge">New chat started.</span>
+                            <span class="o_gsus_ai_resume_link">Resume previous chat &gt;</span>
+                        </div>
+                        <button class="o_gsus_ai_resume_dismiss" t-on-click="() => this.dismissBanner()" title="Dismiss">
+                            <i class="oi" data-icon="close"/>
+                        </button>
+                    </div>
+                </t>
+
+                <!-- Chat Panel Body -->
+                <t t-if="!this.state.isMinimized">
+                    <div class="o_gsus_ai_fp_body">
+                        <GsusAiChatPanel isFloating="true"/>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </t>
+</templates>

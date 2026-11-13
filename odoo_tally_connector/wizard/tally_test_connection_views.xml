@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================
+         Test Tally Connection Wizard View
+    ============================================================ -->
+
+    <record id="view_tally_test_connection_form" model="ir.ui.view">
+        <field name="name">tally.test.connection.form</field>
+        <field name="model">tally.test.connection</field>
+        <field name="arch" type="xml">
+            <form string="Test Tally Connection">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>🔌 Test Tally Prime Connection</h2>
+                    </div>
+                    <group>
+                        <field name="server_url" string="Tally Server URL"
+                               placeholder="http://localhost:9000"/>
+                    </group>
+                    <group invisible="result_status == 'pending'">
+                        <field name="result_status" widget="badge"
+                               decoration-success="result_status == 'ok'"
+                               decoration-danger="result_status == 'fail'"
+                               string="Result Status" readonly="1"/>
+                        <field name="result_message" string="Message" readonly="1"
+                               widget="text"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Test Connection" name="action_test"
+                            type="object" class="btn-primary"
+                            id="btn_do_test_connection"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

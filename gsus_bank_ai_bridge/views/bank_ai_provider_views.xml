@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gsus_bank_ai_provider_tree" model="ir.ui.view">
+        <field name="name">gsus.bank.ai.provider.tree</field>
+        <field name="model">gsus.bank.ai.provider</field>
+        <field name="arch" type="xml">
+            <list string="AI Parsing Engines" decoration-success="is_active == True">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="provider_type"/>
+                <field name="model_name"/>
+                <field name="is_active" widget="boolean_toggle"/>
+                <field name="total_parsed_txns" string="Txns Parsed"/>
+                <field name="last_status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_gsus_bank_ai_provider_form" model="ir.ui.view">
+        <field name="name">gsus.bank.ai.provider.form</field>
+        <field name="model">gsus.bank.ai.provider</field>
+        <field name="arch" type="xml">
+            <form string="AI Parsing Engine">
+                <header>
+                    <button name="action_test_connection" type="object" string="Test Connection Ping" class="btn-primary" icon="fa-bolt"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <field name="has_api_key" invisible="1"/>
+                    <widget name="web_ribbon" title="Active &amp; Connected" bg_color="text-bg-success" invisible="not is_active or (not has_api_key and provider_type not in ('native',))"/>
+                    <widget name="web_ribbon" title="API Key Required" bg_color="text-bg-warning" invisible="not is_active or has_api_key or provider_type == 'native'"/>
+                    <widget name="web_ribbon" title="100% Offline &amp; Instant" bg_color="text-bg-info" invisible="not is_active or provider_type != 'native'"/>
+                    <div class="oe_title">
+                        <label for="name" string="Engine Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Native Python Engine (Offline)"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Provider Engine Details">
+                            <field name="provider_type" widget="radio"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                            <field name="native_model" invisible="provider_type != 'native'"/>
+                            <field name="gemini_model" invisible="provider_type != 'gemini'"/>
+                            <field name="openai_model" invisible="provider_type != 'openai'"/>
+                            <field name="model_name"/>
+                        </group>
+                        <group string="API Credentials &amp; Vault">
+                            <field name="api_key" password="True" placeholder="Enter API Secret Key..." invisible="provider_type == 'native'"/>
+                            <field name="base_url" placeholder="https://... (Optional)" invisible="provider_type == 'native'"/>
+                            <field name="temperature" invisible="provider_type == 'native'"/>
+                            <field name="timeout_seconds"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Live Telemetry &amp; Status" name="telemetry">
+                            <group>
+                                <field name="last_status" readonly="1"/>
+                                <field name="supported_models_count" readonly="1"/>
+                                <field name="total_parsed_pages" readonly="1"/>
+                                <field name="total_parsed_txns" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gsus_bank_ai_provider" model="ir.actions.act_window">
+        <field name="name">AI Parsing Engines</field>
+        <field name="res_model">gsus.bank.ai.provider</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure your Gemini, OpenAI, or Local Ollama engine for automatic Bank Statement parsing!
+            </p>
+        </field>
+    </record>
+</odoo>

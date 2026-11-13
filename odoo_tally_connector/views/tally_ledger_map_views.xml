@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tally_ledger_map_list" model="ir.ui.view">
+        <field name="name">tally.ledger.map.list</field>
+        <field name="model">tally.ledger.map</field>
+        <field name="arch" type="xml">
+            <list string="Tally Ledger Mapping" decoration-muted="not active">
+                <field name="account_code" string="Account Code"/>
+                <field name="account_id" string="Odoo Account"/>
+                <field name="tally_ledger_name" string="Tally Ledger Name"/>
+                <field name="tally_group" string="Tally Group"/>
+                <field name="is_party_account" string="Party Account?" widget="boolean"/>
+                <field name="active" widget="boolean" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tally_ledger_map_form" model="ir.ui.view">
+        <field name="name">tally.ledger.map.form</field>
+        <field name="model">tally.ledger.map</field>
+        <field name="arch" type="xml">
+            <form string="Tally Ledger Mapping">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="tally_ledger_name" string="Tally Ledger Name"/>
+                        <h1>
+                            <field name="tally_ledger_name" placeholder="e.g. Sales Account, Sundry Debtors..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Odoo Account">
+                            <field name="account_id" placeholder="Select Odoo GL Account..."/>
+                            <field name="account_code" readonly="1"/>
+                        </group>
+                        <group string="Tally Ledger Settings">
+                            <field name="tally_group" placeholder="e.g. Sundry Debtors, Duties &amp; Taxes..."/>
+                            <field name="is_party_account"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tally_ledger_map" model="ir.actions.act_window">
+        <field name="name">Tally Ledger Mapping</field>
+        <field name="res_model">tally.ledger.map</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

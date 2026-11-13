@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="gsus_ai.ChatPanel">
+        <div class="o_gsus_ai_chat_container" t-att-class="{'o_gsus_ai_floating_mode': this.isFloating, 'o_gsus_ai_dark_mode': this.isDarkMode}">
+            <!-- Left Sidebar (Conversation Drawer) -->
+            <div class="o_gsus_ai_sidebar" t-att-class="{'o_gsus_ai_sidebar_floating_open': this.isFloating and this.state.showSidebar, 'o_gsus_ai_sidebar_floating_hidden': this.isFloating and !this.state.showSidebar}">
+                <div class="o_gsus_ai_sidebar_header">
+                    <t t-if="this.isFloating">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="fw-bold small text-muted"><i class="oi me-1" data-icon="schedule"/> Conversations</span>
+                            <button class="btn btn-sm btn-link text-muted p-0" t-on-click="() => this.toggleSidebar()" title="Close drawer">
+                                <i class="oi" data-icon="close"/>
+                            </button>
+                        </div>
+                    </t>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="o_gsus_ai_new_chat_btn flex-grow-1" t-on-click="() => this.createNewConversation()" title="Start New Conversation">
+                            <i class="oi me-1" data-icon="add"/> New Conversation
+                        </button>
+                        <button class="o_gsus_ai_quick_search_btn" 
+                                t-on-click="() => this.openSearchModal()" 
+                                title="Quick Search (Ctrl + K)">
+                            <i class="oi" data-icon="search"/>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="o_gsus_ai_conversation_list">
+                    <t t-if="this.filteredConversations.length === 0">
+                        <div class="text-muted text-center p-3 small">No conversations found.</div>
+                    </t>
+
+                    <!-- Pinned Section -->
+                    <t t-if="this.pinnedConversations.length > 0">
+                        <div class="o_gsus_ai_sidebar_section">
+                            <div class="o_gsus_ai_sidebar_section_title">Pinned</div>
+                            <t t-foreach="this.pinnedConversations" t-as="conv" t-key="conv.id">
+                                <div class="o_gsus_ai_conv_item" 
+                                     t-att-class="{'active': this.state.activeConversation and this.state.activeConversation.id === conv.id}"
+                                     t-on-click="() => this.selectConversation(conv.id)">
+                                    
+                                    <!-- Leading Unique AI Conversation Badge -->
+                                    <div class="o_gsus_ai_conv_leading_badge flex-shrink-0" t-att-class="{'pinned': conv.is_pinned}">
+                                        <i class="oi" t-att-data-icon="conv.is_pinned ? 'star' : 'forum'"/>
+                                    </div>
+
+                                    <!-- Title or Inline Rename -->
+                                    <t t-if="this.state.inlineRenamingConvId === conv.id">
+                                        <input type="text" 
+                                               class="o_gsus_ai_inline_rename_input form-control form-control-sm"
+                                               t-att-data-conv-id="conv.id"
+                                               t-model.proxy="this.state.inlineRenamingValue"
+                                               t-on-keydown="(ev) => this.onInlineRenameKeydown(ev, conv.id)"
+                                               t-on-blur="() => this.commitInlineRename(conv.id)"
+                                               t-on-click.stop="() => {}"/>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="o_gsus_ai_conv_title" t-att-title="conv.name">
+                                            <t t-esc="conv.name"/>
+                                        </div>
+                                    </t>
+
+                                    <!-- Right Hover Actions (Pin & Options) -->
+                                    <div class="o_gsus_ai_conv_actions">
+                                        <button class="o_gsus_ai_conv_action_btn"
+                                                t-att-class="{'o_gsus_ai_pin_active': conv.is_pinned}"
+                                                t-att-title="conv.is_pinned ? 'Unpin from Top' : 'Pin to Top'"
+                                                t-on-click.stop="(ev) => this.togglePin(conv.id, ev)">
+                                            <i class="oi" t-att-data-icon="conv.is_pinned ? 'star' : 'star_outline'"/>
+                                        </button>
+                                        <div class="o_gsus_ai_item_menu_wrapper position-relative">
+                                            <button class="o_gsus_ai_conv_action_btn o_gsus_ai_menu_trigger_btn"
+                                                    title="Conversation Options"
+                                                    t-on-click.stop="(ev) => this.toggleItemMenu(conv.id, ev)">
+                                                <i class="oi" data-icon="tune"/>
+                                            </button>
+
+                                            <!-- Unique GSUS AI Popover Menu -->
+                                            <t t-if="this.state.activeMenuConvId === conv.id">
+                                                <div class="o_gsus_ai_item_popover_menu" t-on-click.stop="() => {}">
+                                                    <div class="o_gsus_ai_popover_header">
+                                                        <span>Conversation Options</span>
+                                                    </div>
+                                                    <button class="o_gsus_ai_popover_option" t-on-click="(ev) => this.openRenameModal(conv, ev)">
+                                                        <span class="o_gsus_ai_chip chip_rename">
+                                                            <i class="oi" data-icon="edit"/>
+                                                        </span>
+                                                        <span class="o_gsus_ai_option_text">Rename Title</span>
+                                                    </button>
+                                                    <button class="o_gsus_ai_popover_option" t-on-click="(ev) => this.togglePin(conv.id, ev)">
+                                                        <span class="o_gsus_ai_chip chip_pin">
+                                                            <i class="oi" t-att-data-icon="conv.is_pinned ? 'star_outline' : 'star'"/>
+                                                        </span>
+                                                        <span class="o_gsus_ai_option_text"><t t-esc="conv.is_pinned ? 'Unpin from Top' : 'Pin to Top'"/></span>
+                                                    </button>
+
+                                                    <button class="o_gsus_ai_popover_option" t-on-click="(ev) => this.toggleArchive(conv.id, ev)">
+                                                        <span class="o_gsus_ai_chip chip_archive">
+                                                            <i class="oi" t-att-data-icon="conv.is_archived ? 'unarchive' : 'inventory_2'"/>
+                                                        </span>
+                                                        <span class="o_gsus_ai_option_text"><t t-esc="conv.is_archived ? 'Restore Chat' : 'Archive Chat'"/></span>
+                                                    </button>
+                                                    <div class="o_gsus_ai_popover_divider"/>
+                                                    <button class="o_gsus_ai_popover_option delete_option" t-on-click="(ev) => this.deleteConversation(conv.id, ev)">
+                                                        <span class="o_gsus_ai_chip chip_delete">
+                                                            <i class="oi" data-icon="delete_outline"/>
+                                                        </span>
+                                                        <span class="o_gsus_ai_option_text text-danger">Delete Chat</span>
+                                                    </button>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+
+                    <!-- Recents Section -->
+                    <t t-if="this.recentConversations.length > 0">
+                        <div class="o_gsus_ai_sidebar_section">
+                            <div class="o_gsus_ai_sidebar_section_title o_gsus_ai_recents_header d-flex align-items-center"
+                                 t-on-click="() => this.toggleRecentsCollapse()">
+                                <span>Recents</span>
+                                <i class="oi ms-1 small text-muted" t-att-data-icon="this.state.isRecentsCollapsed ? 'chevron_right' : 'expand_more'"/>
+                            </div>
+                            <t t-if="!this.state.isRecentsCollapsed">
+                                <t t-foreach="this.recentConversations" t-as="conv" t-key="conv.id">
+                                    <div class="o_gsus_ai_conv_item" 
+                                         t-att-class="{'active': this.state.activeConversation and this.state.activeConversation.id === conv.id}"
+                                         t-on-click="() => this.selectConversation(conv.id)">
+                                        
+                                        <!-- Leading Unique AI Conversation Badge -->
+                                        <div class="o_gsus_ai_conv_leading_badge flex-shrink-0" t-att-class="{'pinned': conv.is_pinned}">
+                                            <i class="oi" t-att-data-icon="conv.is_pinned ? 'star' : 'forum'"/>
+                                        </div>
+
+                                        <!-- Title or Inline Rename -->
+                                        <t t-if="this.state.inlineRenamingConvId === conv.id">
+                                            <input type="text" 
+                                                   class="o_gsus_ai_inline_rename_input form-control form-control-sm"
+                                                   t-att-data-conv-id="conv.id"
+                                                   t-model.proxy="this.state.inlineRenamingValue"
+                                                   t-on-keydown="(ev) => this.onInlineRenameKeydown(ev, conv.id)"
+                                                   t-on-blur="() => this.commitInlineRename(conv.id)"
+                                                   t-on-click.stop="() => {}"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="o_gsus_ai_conv_title" t-att-title="conv.name">
+                                                <t t-esc="conv.name"/>
+                                            </div>
+                                        </t>
+
+                                        <!-- Right Hover Actions (Pin & Options) -->
+                                        <div class="o_gsus_ai_conv_actions">
+                                            <button class="o_gsus_ai_conv_action_btn"
+                                                    t-att-class="{'o_gsus_ai_pin_active': conv.is_pinned}"
+                                                    t-att-title="conv.is_pinned ? 'Unpin from Top' : 'Pin to Top'"
+                                                    t-on-click.stop="(ev) => this.togglePin(conv.id, ev)">
+                                                <i class="oi" t-att-data-icon="conv.is_pinned ? 'star' : 'star_outline'"/>
+                                            </button>
+                                            <div class="o_gsus_ai_item_menu_wrapper position-relative">
+                                                <button class="o_gsus_ai_conv_action_btn o_gsus_ai_menu_trigger_btn"
+                                                        title="Conversation Options"
+                                                        t-on-click.stop="(ev) => this.toggleItemMenu(conv.id, ev)">
+                                                    <i class="oi" data-icon="tune"/>
+                                                </button>
+
+                                                <!-- Unique GSUS AI Popover Menu -->
+                                                <t t-if="this.state.activeMenuConvId === conv.id">
+                                                    <div class="o_gsus_ai_item_popover_menu" t-on-click.stop="() => {}">
+                                                        <div class="o_gsus_ai_popover_header">
+                                                            <span>Conversation Options</span>
+                                                        </div>
+                                                        <button class="o_gsus_ai_popover_option" t-on-click="(ev) => this.openRenameModal(conv, ev)">
+                                                            <span class="o_gsus_ai_chip chip_rename">
+                                                                <i class="oi" data-icon="edit"/>
+                                                            </span>
+                                                            <span class="o_gsus_ai_option_text">Rename Title</span>
+                                                        </button>
+                                                        <button class="o_gsus_ai_popover_option" t-on-click="(ev) => this.togglePin(conv.id, ev)">
+                                                            <span class="o_gsus_ai_chip chip_pin">
+                                                                <i class="oi" t-att-data-icon="conv.is_pinned ? 'star_outline' : 'star'"/>
+                                                            </span>
+                                                            <span class="o_gsus_ai_option_text"><t t-esc="conv.is_pinned ? 'Unpin from Top' : 'Pin to Top'"/></span>
+                                                        </button>
+
+                                                        <button class="o_gsus_ai_popover_option" t-on-click="(ev) => this.toggleArchive(conv.id, ev)">
+                                                            <span class="o_gsus_ai_chip chip_archive">
+                                                                <i class="oi" t-att-data-icon="conv.is_archived ? 'unarchive' : 'inventory_2'"/>
+                                                            </span>
+                                                            <span class="o_gsus_ai_option_text"><t t-esc="conv.is_archived ? 'Restore Chat' : 'Archive Chat'"/></span>
+                                                        </button>
+                                                        <div class="o_gsus_ai_popover_divider"/>
+                                                        <button class="o_gsus_ai_popover_option delete_option" t-on-click="(ev) => this.deleteConversation(conv.id, ev)">
+                                                            <span class="o_gsus_ai_chip chip_delete">
+                                                                <i class="oi" data-icon="delete_outline"/>
+                                                            </span>
+                                                            <span class="o_gsus_ai_option_text text-danger">Delete Chat</span>
+                                                        </button>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Right Main Chat Panel with Drag & Drop -->
+            <div class="o_gsus_ai_main_panel position-relative"
+                 t-on-dragover.prevent="(ev) => this.onDragOver(ev)"
+                 t-on-dragleave.prevent="(ev) => this.onDragLeave(ev)"
+                 t-on-drop.prevent="(ev) => this.onDrop(ev)">
+                <!-- Drag and Drop Dropzone Overlay -->
+                <t t-if="this.state.isDraggingFile">
+                    <div class="o_gsus_ai_dropzone_overlay">
+                        <div class="o_gsus_ai_dropzone_box">
+                            <i class="oi oi-3x text-primary mb-2" data-icon="cloud_upload"/>
+                            <h5 class="fw-bold mb-1">Drop files here to analyze</h5>
+                            <p class="text-muted small mb-0">CSV, Excel, PDF, TXT, JSON, Images</p>
+                        </div>
+                    </div>
+                </t>
+                <!-- Chat Header (Hidden in floating mode, floating panel provides its own header) -->
+                <t t-if="!this.isFloating">
+                    <div class="o_gsus_ai_chat_header">
+                        <div class="o_gsus_ai_header_left">
+                            <div class="o_gsus_ai_header_title_wrapper">
+                                <h4 class="o_gsus_ai_header_title" t-on-dblclick="() => this.openRenameModal()" title="Double-click to rename">
+                                    <t t-if="this.state.activeConversation">
+                                        <t t-esc="this.state.activeConversation.name"/>
+                                    </t>
+                                    <t t-else="">AI Copilot</t>
+                                </h4>
+                                <t t-if="this.state.activeConversation">
+                                    <button class="btn btn-link btn-xs p-0 ms-1 text-muted o_gsus_ai_rename_btn" t-on-click="() => this.openRenameModal()" title="Rename chat">
+                                        <i class="oi" data-icon="edit"/>
+                                    </button>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="o_gsus_ai_header_right">
+                            <t t-if="this.state.activeConversation">
+                                <div class="o_gsus_ai_header_actions">
+
+
+                                    <!-- Favorite Pin Toggle -->
+                                    <button class="o_gsus_ai_hdr_action_btn"
+                                            t-att-class="{'pinned': this.state.activeConversation.is_pinned}"
+                                            t-on-click="(ev) => this.togglePin(this.state.activeConversation.id, ev)"
+                                            t-att-title="this.state.activeConversation.is_pinned ? 'Unpin Conversation' : 'Pin Conversation'">
+                                        <i class="oi" t-att-data-icon="this.state.activeConversation.is_pinned ? 'star' : 'star_outline'"/>
+                                    </button>
+
+                                    <!-- 3-Dots / Options Menu Wrapper -->
+                                    <div class="o_gsus_ai_item_menu_wrapper position-relative">
+                                        <button class="o_gsus_ai_hdr_action_btn o_gsus_ai_menu_trigger_btn"
+                                                t-on-click.stop="(ev) => this.toggleHeaderMenu(ev)"
+                                                title="More Options">
+                                            <i class="oi" data-icon="more_horiz"/>
+                                        </button>
+
+                                        <!-- Header Dropdown Popover Menu -->
+                                        <t t-if="this.state.showHeaderMenu">
+                                            <div class="o_gsus_ai_item_popover_menu" t-on-click.stop="() => {}">
+                                                <div class="o_gsus_ai_popover_header">
+                                                    <span>Chat Options</span>
+                                                </div>
+                                                <button class="o_gsus_ai_popover_option" t-on-click="() => this.openRenameModal()">
+                                                    <span class="o_gsus_ai_chip chip_rename">
+                                                        <i class="oi" data-icon="edit"/>
+                                                    </span>
+                                                    <span class="o_gsus_ai_option_text">Rename Chat</span>
+                                                </button>
+                                                <button class="o_gsus_ai_popover_option" t-on-click="(ev) => this.togglePinFromHeader(ev)">
+                                                    <span class="o_gsus_ai_chip chip_pin">
+                                                        <i class="oi" t-att-data-icon="this.state.activeConversation.is_pinned ? 'star_outline' : 'star'"/>
+                                                    </span>
+                                                    <span class="o_gsus_ai_option_text">
+                                                        <t t-esc="this.state.activeConversation.is_pinned ? 'Unpin Conversation' : 'Pin to Top'"/>
+                                                    </span>
+                                                </button>
+
+                                                <button class="o_gsus_ai_popover_option" t-on-click="(ev) => this.toggleArchiveFromHeader(ev)">
+                                                    <span class="o_gsus_ai_chip chip_archive">
+                                                        <i class="oi" t-att-data-icon="this.state.activeConversation.is_archived ? 'unarchive' : 'inventory_2'"/>
+                                                    </span>
+                                                    <span class="o_gsus_ai_option_text">
+                                                        <t t-esc="this.state.activeConversation.is_archived ? 'Restore Chat' : 'Archive Chat'"/>
+                                                    </span>
+                                                </button>
+                                                <div class="o_gsus_ai_popover_divider"/>
+                                                <button class="o_gsus_ai_popover_option delete_option" t-on-click="(ev) => this.deleteFromHeader(ev)">
+                                                    <span class="o_gsus_ai_chip chip_delete">
+                                                        <i class="oi" data-icon="delete_outline"/>
+                                                    </span>
+                                                    <span class="o_gsus_ai_option_text text-danger">Delete Chat</span>
+                                                </button>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Messages Area -->
+                <div class="o_gsus_ai_messages_area" t-on-click="this.onMessagesAreaClick">
+                    <t t-if="this.state.messages.length === 0 and !this.state.isSending">
+                        <t t-if="this.isFloating">
+                            <!-- Image 2 Floating Welcome Screen -->
+                            <div class="o_gsus_ai_welcome_floating">
+                                <div class="o_gsus_ai_welcome_icon_ring">
+                                    <img src="/gsus_ai/static/description/icon.png?v=7" class="o_gsus_ai_welcome_logo" alt="Odoo AI"/>
+                                </div>
+                                <h3 class="o_gsus_ai_welcome_title">Odoo AI</h3>
+                                <p class="o_gsus_ai_welcome_subtitle">I'm your Odoo sidekick for most day-to-day tasks.</p>
+                                
+                                <div class="o_gsus_ai_quick_chips">
+                                    <button class="o_gsus_ai_quick_chip" t-on-click="() => this.sendQuickPrompt('Do I have any customer in New Jersey?')">
+                                        <span class="text-truncate">Do I have any customer in New Jersey?</span>
+                                        <i class="oi" data-icon="arrow_forward"/>
+                                    </button>
+                                    <button class="o_gsus_ai_quick_chip" t-on-click="() => this.sendQuickPrompt('Show me the current cash flow status')">
+                                        <span class="text-truncate">Show me the current cash flow status</span>
+                                        <i class="oi" data-icon="arrow_forward"/>
+                                    </button>
+                                    <button class="o_gsus_ai_quick_chip" t-on-click="() => this.sendQuickPrompt('Check product stock and inventory')">
+                                        <span class="text-truncate">Check product stock and inventory</span>
+                                        <i class="oi" data-icon="arrow_forward"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center my-auto p-4 text-muted">
+                                <i class="oi oi-3x mb-3 text-primary" data-icon="forum" style="opacity: 0.5;"/>
+                                <h5>How can Enterprise AI help your business today?</h5>
+                                <p class="small">Ask questions about Sales, CRM leads, customer balances, product stock, or schedule activities.</p>
+                            </div>
+                        </t>
+                    </t>
+
+                    <div class="o_gsus_ai_messages_stream">
+                        <t t-foreach="this.state.messages" t-as="msg" t-key="msg.id">
+                            <t t-if="msg.role !== 'system' and msg.role !== 'tool' and (msg.role === 'user' or (msg.content and msg.content.trim().length > 0) or msg.is_error)">
+                                <div class="o_gsus_ai_message_wrapper" t-att-data-msg-id="msg.id" t-att-class="msg.role + (this.state.editingMessageId === msg.id ? ' o_gsus_ai_editing_active' : '')">
+                                    <div class="o_gsus_ai_message_bubble" t-att-class="this.state.editingMessageId === msg.id ? ' o_gsus_ai_editing_bubble' : ''">
+                                        <t t-if="msg.role === 'user'">
+                                            <t t-if="this.state.editingMessageId === msg.id">
+                                                <div class="o_gsus_ai_inline_editor">
+                                                    <textarea class="form-control o_gsus_ai_edit_textarea"
+                                                              rows="2"
+                                                              t-model.proxy="this.state.editingText"
+                                                              t-on-keydown="(ev) => this.onEditingKeydown(ev, msg)"/>
+                                                    <div class="d-flex justify-content-end gap-2 mt-2">
+                                                        <button class="btn btn-sm rounded-pill o_gsus_ai_edit_cancel_btn"
+                                                                t-on-click="() => this.cancelEditing()">
+                                                            Cancel
+                                                        </button>
+                                                        <button class="btn btn-sm rounded-pill o_gsus_ai_edit_send_btn"
+                                                                t-on-click="() => this.submitEditedMessage(msg)">
+                                                            Send
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="o_gsus_ai_markdown_body o_gsus_ai_user_markdown" t-out="this.renderMarkdown(msg.content)"/>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-if="msg.is_error">
+                                                <div class="alert alert-danger p-2 small mb-0 rounded">
+                                                    <i class="oi me-1" data-icon="warning"/> <t t-esc="msg.error_text or msg.content"/>
+                                                </div>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="o_gsus_ai_markdown_body" t-out="this.renderMarkdown(msg.content)"/>
+                                            </t>
+                                        </t>
+                                    </div>
+                                    <div class="o_gsus_ai_meta_line d-flex align-items-center" t-att-class="msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'">
+                                        <t t-if="msg.role === 'user'">
+                                            <div class="d-flex gap-1 o_gsus_ai_msg_actions">
+                                                <button class="btn btn-link btn-xs p-1 text-muted o_gsus_ai_action_icon" t-on-click="() => this.startEditingMessage(msg)" title="Edit">
+                                                    <i class="oi" data-icon="edit"/>
+                                                </button>
+                                                <button class="btn btn-link btn-xs p-1 text-muted o_gsus_ai_action_icon" t-on-click="() => this.copyToClipboard(msg.content)" title="Copy">
+                                                    <i class="oi" data-icon="assignment"/>
+                                                </button>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="d-flex gap-2 align-items-center o_gsus_ai_msg_actions">
+                                                <button class="btn btn-link btn-xs p-1 text-muted o_gsus_ai_action_icon" t-on-click="() => this.copyToClipboard(msg.content)" title="Copy">
+                                                    <i class="oi" data-icon="assignment"/>
+                                                </button>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+
+                    <!-- Pending Action Proposals -->
+                    <t t-foreach="this.state.pendingProposals" t-as="prop" t-key="prop.id">
+                        <t t-set="details" t-value="this.getProposalDetails(prop)"/>
+                        <div class="o_gsus_ai_proposal_card border shadow-sm rounded p-3 mb-3 bg-white">
+                            <div class="o_gsus_ai_proposal_header d-flex align-items-center mb-2 text-primary fw-bold">
+                                <i class="oi oi-lg me-2" data-icon="help"/> Action Confirmation
+                            </div>
+                            <div class="mb-2 fw-semibold fs-6">
+                                <t t-esc="details.title"/>
+                            </div>
+
+                            <!-- Clean Business Fields Summary -->
+                            <t t-if="details.entries.length > 0">
+                                <div class="table-responsive my-2">
+                                    <table class="table table-sm table-bordered bg-light mb-0 small">
+                                        <tbody>
+                                            <t t-foreach="details.entries" t-as="entry" t-key="entry.key">
+                                                <tr>
+                                                    <td class="text-muted fw-semibold" style="width: 35%;"><t t-esc="entry.key"/></td>
+                                                    <td class="fw-medium text-dark"><t t-esc="entry.value"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+
+                            <div class="o_gsus_ai_proposal_actions mt-3">
+                                <t t-if="this.state.processingProposalId === prop.id">
+                                    <div class="d-flex align-items-center gap-2 py-2 px-3 bg-light rounded text-success fw-semibold border border-success-subtle shadow-sm">
+                                        <span class="spinner-border spinner-border-sm text-success" role="status" aria-hidden="true"/>
+                                        <span>
+                                            <t t-if="this.state.processingProposalAction === 'confirm'">Executing action... Please wait...</t>
+                                            <t t-else="">Cancelling action...</t>
+                                        </span>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-success px-3 fw-semibold" 
+                                                t-att-disabled="this.state.processingProposalId"
+                                                t-on-click="() => this.handleProposal(prop.id, 'confirm')">
+                                            <i class="oi me-1" data-icon="check"/> Yes
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary px-3" 
+                                                t-att-disabled="this.state.processingProposalId"
+                                                t-on-click="() => this.handleProposal(prop.id, 'reject')">
+                                            <i class="oi me-1" data-icon="close"/> No
+                                        </button>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Thinking Indicator -->
+                    <t t-if="this.state.isSending">
+                        <div class="o_gsus_ai_message_wrapper assistant">
+                            <div class="o_gsus_ai_message_bubble text-muted d-flex align-items-center gap-2">
+                                <span class="spinner-border spinner-border-sm text-primary"/> Thinking and inspecting Odoo records...
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Input Footer -->
+                <div class="o_gsus_ai_composer">
+                    <!-- Antigravity-Style Integrated Input Card (Matching Image 2) -->
+                    <div class="o_gsus_ai_antigravity_input_box">
+                        <!-- Attachment Tray Inside Composer -->
+                        <t t-if="this.state.attachedFile">
+                            <div class="o_gsus_ai_attachment_tray">
+                                <!-- Image Preview Card -->
+                                <t t-if="this.state.attachedFile.is_image">
+                                    <div class="o_gsus_ai_thumbnail_card">
+                                        <img class="o_gsus_ai_thumbnail_img" 
+                                             t-att-src="this.state.attachedFile.previewUrl" 
+                                             t-att-alt="this.state.attachedFile.name"/>
+                                        <button class="o_gsus_ai_thumbnail_remove_btn" 
+                                                t-on-click="() => this.removeAttachedFile()" 
+                                                title="Remove image">
+                                            <i class="oi" data-icon="close"/>
+                                        </button>
+                                    </div>
+                                </t>
+                                <!-- Non-Image Document Card -->
+                                <t t-else="">
+                                    <div class="o_gsus_ai_doc_card">
+                                        <div class="o_gsus_ai_doc_icon_box">
+                                            <i class="oi" t-att-data-icon="this.getFileIcon(this.state.attachedFile.name)"/>
+                                        </div>
+                                        <div class="o_gsus_ai_doc_meta">
+                                            <span class="o_gsus_ai_doc_name text-truncate" t-esc="this.state.attachedFile.name"/>
+                                            <span class="o_gsus_ai_doc_size" t-esc="this.formatFileSize(this.state.attachedFile.size)"/>
+                                        </div>
+                                        <button class="o_gsus_ai_doc_remove_btn" 
+                                                t-on-click="() => this.removeAttachedFile()" 
+                                                title="Remove file">
+                                            <i class="oi" data-icon="close"/>
+                                        </button>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                        <!-- Top: Multi-line Input Area (Auto-expanding) -->
+                        <textarea class="o_gsus_ai_textarea" 
+                                  t-att-placeholder="this.isFloating ? 'Message Odoo AI...' : 'Ask anything, @ to mention, / for actions'"
+                                  rows="1"
+                                  t-model.proxy="this.state.inputMessage"
+                                  t-on-input="(ev) => this.onComposerInput(ev)"
+                                  t-on-keydown="(ev) => this.onKeydown(ev)"/>
+
+                        <!-- Bottom: Action Toolbar -->
+                        <div class="o_gsus_ai_bottom_toolbar d-flex justify-content-between align-items-center">
+                            <!-- Left: Attach Button & Model Selector Pill -->
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Hidden file input -->
+                                <input type="file" class="d-none o_gsus_ai_file_input" t-on-change="(ev) => this.onFileSelected(ev)"/>
+                                
+                                <button class="o_gsus_ai_attach_pill_btn" 
+                                        t-on-click="() => this.triggerFileInput()" 
+                                        title="Attach file (CSV, Excel, PDF, JSON)">
+                                    <i class="oi" data-icon="add"/>
+                                </button>
+
+                                <!-- Model Selector Pill Button -->
+                                <div class="o_gsus_ai_model_pill_wrapper position-relative">
+                                    <button class="o_gsus_ai_model_pill_btn d-flex align-items-center gap-2"
+                                            t-on-click="(ev) => this.toggleModelDropdown(ev)"
+                                            title="Select AI Model">
+                                        <i class="oi text-primary" data-icon="bolt"/>
+                                        <span class="text-truncate fw-semibold"><t t-esc="this.activeModelLabel"/></span>
+                                        <i class="oi ms-1 text-muted small" data-icon="expand_less"/>
+                                    </button>
+
+                                    <!-- Upward Model Dropdown Menu -->
+                                    <t t-if="this.state.showModelDropdown">
+                                        <div class="o_gsus_ai_model_upward_dropdown">
+                                            <div class="o_gsus_ai_dropdown_title">Select Model</div>
+                                            <t t-if="this.allProviderModels.length === 0">
+                                                <div class="p-2 text-muted small text-center">No active models found</div>
+                                            </t>
+                                            <t t-foreach="this.allProviderModels" t-as="opt" t-key="opt.provider_id">
+                                                <button class="o_gsus_ai_upward_model_option"
+                                                        t-att-class="{'active': this.state.activeConversation and this.state.activeConversation.provider_id === opt.provider_id}"
+                                                        t-on-click="() => this.selectModel(opt)">
+                                                    <i class="oi me-2 text-primary" data-icon="smart_toy"/>
+                                                    <span class="flex-grow-1 text-truncate"><t t-esc="opt.label"/></span>
+                                                    <t t-if="this.state.activeConversation and this.state.activeConversation.provider_id === opt.provider_id">
+                                                        <i class="oi text-success" data-icon="check"/>
+                                                    </t>
+                                                </button>
+                                            </t>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Right: Circular Blue Send Arrow Button (Matching Image 2) -->
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="o_gsus_ai_circular_send_btn" 
+                                        t-att-disabled="(!this.state.inputMessage.trim() and !this.state.attachedFile) or this.state.isSending"
+                                        t-on-click="() => this.sendMessage()"
+                                        title="Send message">
+                                    <i class="oi" data-icon="arrow_forward"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unique GSUS AI Quick Search / Command Palette Modal -->
+            <t t-if="this.state.showSearchModal">
+                <div class="o_gsus_ai_search_modal_backdrop" t-on-click="() => this.closeSearchModal()">
+                    <div class="o_gsus_ai_search_modal_dialog" t-on-click.stop="() => {}">
+                        <!-- Search Input Bar -->
+                        <div class="o_gsus_ai_search_input_wrapper">
+                            <i class="oi o_gsus_ai_search_input_icon" data-icon="search"/>
+                            <input type="text"
+                                   class="o_gsus_ai_search_input"
+                                   placeholder="Search conversations..."
+                                   t-model.proxy="this.state.modalSearchQuery"
+                                   t-on-keydown="(ev) => this.onSearchModalKeydown(ev)"/>
+                            <t t-if="this.state.modalSearchQuery">
+                                <button class="btn btn-sm btn-link text-muted p-0 me-2" t-on-click="() => this.clearModalSearch()">
+                                    <i class="oi" data-icon="close"/>
+                                </button>
+                            </t>
+                            <span class="o_gsus_ai_search_esc_badge" t-on-click="() => this.closeSearchModal()" title="Press Escape to close">ESC</span>
+                        </div>
+
+                        <!-- Results List -->
+                        <div class="o_gsus_ai_search_results_container">
+                            <div class="o_gsus_ai_search_section_title">
+                                <t t-if="this.state.modalSearchQuery.trim()">
+                                    <span>Matching Conversations (<t t-esc="this.modalFilteredConversations.length"/>)</span>
+                                </t>
+                                <t t-else="">
+                                    <span>Recent Chats</span>
+                                </t>
+                            </div>
+
+                            <t t-if="this.modalFilteredConversations.length === 0">
+                                <div class="o_gsus_ai_search_empty_state">
+                                    <i class="oi" data-icon="search_off"/>
+                                    <p>No conversations found matching "<t t-esc="this.state.modalSearchQuery"/>"</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="o_gsus_ai_search_items_list">
+                                    <t t-foreach="this.modalFilteredConversations" t-as="conv" t-key="conv.id">
+                                        <div class="o_gsus_ai_search_item"
+                                             t-att-class="{'active': this.state.activeConversation and this.state.activeConversation.id === conv.id}"
+                                             t-on-click="() => this.selectModalConversation(conv.id)">
+                                            <div class="o_gsus_ai_search_item_icon" t-att-class="{'pinned': conv.is_pinned}">
+                                                <i class="oi" t-att-data-icon="conv.is_pinned ? 'star' : 'forum'"/>
+                                            </div>
+                                            <div class="o_gsus_ai_search_item_info">
+                                                <div class="o_gsus_ai_search_item_title">
+                                                    <t t-esc="conv.name"/>
+                                                </div>
+                                                <div class="o_gsus_ai_search_item_meta">
+                                                    <t t-if="conv.is_pinned">
+                                                        <span class="badge bg-warning-subtle text-warning me-1">Pinned</span>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                            <div class="o_gsus_ai_search_item_jump">
+                                                <i class="oi" data-icon="chevron_right"/>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Modal Keyboard Footer -->
+                        <div class="o_gsus_ai_search_modal_footer">
+                            <span class="me-3"><kbd>ESC</kbd> Close</span>
+                            <span><kbd>↵</kbd> Select</span>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Dedicated GSUS AI Rename Modal (Matching Reference Image 2) -->
+            <t t-if="this.state.showRenameModal">
+                <div class="o_gsus_ai_rename_modal_backdrop" t-on-click="() => this.closeRenameModal()">
+                    <div class="o_gsus_ai_rename_modal_dialog" t-on-click.stop="() => {}">
+                        <div class="o_gsus_ai_rename_modal_header">
+                            <div>
+                                <h5 class="o_gsus_ai_rename_modal_title">Rename chat</h5>
+                                <p class="o_gsus_ai_rename_modal_subtitle">Keep it short and recognizable</p>
+                            </div>
+                            <button class="btn btn-sm btn-link text-muted p-0" t-on-click="() => this.closeRenameModal()" title="Close">
+                                <i class="oi" data-icon="close"/>
+                            </button>
+                        </div>
+                        <div class="o_gsus_ai_rename_modal_body">
+                            <input type="text"
+                                   class="o_gsus_ai_rename_modal_input form-control"
+                                   t-model.proxy="this.state.modalRenameValue"
+                                   t-on-keydown="(ev) => this.onRenameModalKeydown(ev)"
+                                   placeholder="Enter conversation title..."/>
+                        </div>
+                        <div class="o_gsus_ai_rename_modal_footer">
+                            <button class="o_gsus_ai_rename_cancel_btn" t-on-click="() => this.closeRenameModal()">
+                                Cancel
+                            </button>
+                            <button class="o_gsus_ai_rename_save_btn" t-on-click="() => this.commitModalRename()">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- GSUS AI Deep Vision Inspector Modal (Unique ERP Image Canvas) -->
+            <t t-if="this.state.showVisionInspector">
+                <div class="o_gsus_ai_vision_backdrop" t-on-click="() => this.closeVisionInspector()">
+                    <div class="o_gsus_ai_vision_dialog" t-on-click.stop="() => {}">
+                        <!-- Top Header Bar -->
+                        <div class="o_gsus_ai_vision_header">
+                            <div class="o_gsus_ai_vision_title_block">
+                                <span class="o_gsus_ai_vision_badge"><i class="oi me-1" data-icon="image"/> Vision Canvas</span>
+                                <h6 class="o_gsus_ai_vision_filename text-truncate" t-att-title="this.state.visionImageName">
+                                    <t t-esc="this.state.visionImageName || 'Document Preview'"/>
+                                </h6>
+                            </div>
+                            <!-- Controls Dock -->
+                            <div class="o_gsus_ai_vision_controls">
+                                <button class="o_gsus_ai_vision_ctrl_btn" t-on-click="() => this.zoomOutVision()" title="Zoom Out (-)">
+                                    <i class="oi" data-icon="zoom_out"/>
+                                </button>
+                                <button class="o_gsus_ai_vision_ctrl_btn zoom_level" t-on-click="() => this.resetVisionZoom()" title="Reset Zoom">
+                                    <t t-esc="this.state.visionZoom"/>%
+                                </button>
+                                <button class="o_gsus_ai_vision_ctrl_btn" t-on-click="() => this.zoomInVision()" title="Zoom In (+)">
+                                    <i class="oi" data-icon="zoom_in"/>
+                                </button>
+                                <button class="o_gsus_ai_vision_ctrl_btn" t-on-click="() => this.fitVisionZoom()" title="Fit to Screen">
+                                    <i class="oi" data-icon="aspect_ratio"/>
+                                </button>
+                                <button class="o_gsus_ai_vision_ctrl_btn" t-on-click="() => this.rotateVision()" title="Rotate 90°">
+                                    <i class="oi" data-icon="rotate_right"/>
+                                </button>
+                                <button class="o_gsus_ai_vision_ctrl_btn" t-on-click="() => this.downloadVisionImage()" title="Download Image">
+                                    <i class="oi" data-icon="download"/>
+                                </button>
+                                <button class="o_gsus_ai_vision_ctrl_btn close_btn" t-on-click="() => this.closeVisionInspector()" title="Close (ESC)">
+                                    <i class="oi" data-icon="close"/>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Central Image Canvas -->
+                        <div class="o_gsus_ai_vision_canvas" t-on-wheel="(ev) => this.onVisionWheel(ev)">
+                            <img class="o_gsus_ai_vision_img"
+                                 t-att-src="this.state.visionImageUrl"
+                                 t-att-alt="this.state.visionImageName"
+                                 t-att-style="'transform: scale(' + (this.state.visionZoom / 100) + ') rotate(' + this.state.visionRotation + 'deg);'"/>
+                        </div>
+
+                        <!-- GSUS Enterprise AI Action Dock (Unique to GSUS AI ERP) -->
+                        <div class="o_gsus_ai_vision_footer">
+                            <div class="o_gsus_ai_vision_actions">
+                                <button class="o_gsus_ai_vision_action_pill" t-on-click="() => this.triggerVisionPrompt('Extract all visible text, invoices, tables, and details from this image using OCR.')">
+                                    <i class="oi me-1" data-icon="text_fields"/> Extract Text / OCR
+                                </button>
+                                <button class="o_gsus_ai_vision_action_pill" t-on-click="() => this.triggerVisionPrompt('Analyze this image and create an appropriate Odoo business record (e.g. Vendor Bill, Customer Invoice, CRM Lead, or Expense) with extracted values.')">
+                                    <i class="oi me-1" data-icon="note_add"/> Convert to Odoo Record
+                                </button>
+                                <button class="o_gsus_ai_vision_action_pill" t-on-click="() => this.triggerVisionPrompt('Analyze this screenshot in detail, diagnose any error message, system status, or configuration, and provide recommended action.')">
+                                    <i class="oi me-1" data-icon="troubleshoot"/> Diagnose Screen / Error
+                                </button>
+                                <button class="o_gsus_ai_vision_action_pill" t-on-click="() => this.triggerVisionPrompt('Summarize key data, metrics, charts, and information shown in this screenshot.')">
+                                    <i class="oi me-1" data-icon="analytics"/> Summarize Visual Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

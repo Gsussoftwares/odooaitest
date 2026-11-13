@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Skill List View -->
+    <record id="view_gsus_ai_skill_tree" model="ir.ui.view">
+        <field name="name">gsus.ai.skill.list</field>
+        <field name="model">gsus.ai.skill</field>
+        <field name="arch" type="xml">
+            <list string="Skills" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name" string="Title"/>
+                <field name="code" string="Identifier"/>
+                <field name="description" string="Description"/>
+                <field name="tool_ids" widget="many2many_tags" string="Included Tools"/>
+                <field name="tool_count" string="Tools Count"/>
+                <field name="is_active" string="Active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Skill Form View -->
+    <record id="view_gsus_ai_skill_form" model="ir.ui.view">
+        <field name="name">gsus.ai.skill.form</field>
+        <field name="model">gsus.ai.skill</field>
+        <field name="arch" type="xml">
+            <form string="AI Capability Skill">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" string="Skill Title"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Search Database, Create Records..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="skill_info" string="Identification">
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="color" widget="color_picker"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                        </group>
+                        <group name="skill_metrics" string="Summary">
+                            <field name="tool_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description &amp; LLM Context" name="description">
+                            <field name="description" placeholder="Describe the capabilities this skill provides to the AI agent..."/>
+                        </page>
+                        <page string="Included Tools" name="tools">
+                            <field name="tool_ids">
+                                <list string="Tools in Skill">
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="domain_category" widget="badge"/>
+                                    <field name="is_readonly"/>
+                                    <field name="use_in_ai" widget="boolean_toggle"/>
+                                    <field name="is_active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Assigned Agents" name="agents">
+                            <field name="agent_ids">
+                                <list string="Agents with this Skill">
+                                    <field name="name"/>
+                                    <field name="role_description"/>
+                                    <field name="is_active"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Skill Search View -->
+    <record id="view_gsus_ai_skill_search" model="ir.ui.view">
+        <field name="name">gsus.ai.skill.search</field>
+        <field name="model">gsus.ai.skill</field>
+        <field name="arch" type="xml">
+            <search string="Search Skills">
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="active" string="Active Skills" domain="[('is_active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Skill Window Action -->
+    <record id="action_gsus_ai_skill" model="ir.actions.act_window">
+        <field name="name">Skills</field>
+        <field name="res_model">gsus.ai.skill</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_gsus_ai_skill_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Manage AI Skills that bundle related business tools for your AI agents.
+            </p>
+        </field>
+    </record>
+</odoo>

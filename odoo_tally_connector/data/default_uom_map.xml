@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Default Tally UoM Mappings
+        ===========================
+        Maps common Odoo UoM records to standard Tally Prime unit symbols.
+        Add more mappings from Tally Connector > UoM Mapping.
+
+        NOTE: These use External IDs from the 'uom' module.
+        If your Odoo instance has different UoMs, add them manually.
+    -->
+    <data noupdate="1">
+
+        <record id="tuom_unit" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="tally_symbol">Nos</field>
+        </record>
+
+        <record id="tuom_dozen" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_dozen"/>
+            <field name="tally_symbol">Doz</field>
+        </record>
+
+        <record id="tuom_kg" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_kgm"/>
+            <field name="tally_symbol">Kg</field>
+        </record>
+
+        <record id="tuom_gram" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_gram"/>
+            <field name="tally_symbol">Gm</field>
+        </record>
+
+        <record id="tuom_lb" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_lb"/>
+            <field name="tally_symbol">Lb</field>
+        </record>
+
+        <record id="tuom_litre" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_litre"/>
+            <field name="tally_symbol">Ltr</field>
+        </record>
+
+        <record id="tuom_ml" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_milliliter"/>
+            <field name="tally_symbol">Ml</field>
+        </record>
+
+        <record id="tuom_meter" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="tally_symbol">Mtr</field>
+        </record>
+
+        <record id="tuom_km" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_km"/>
+            <field name="tally_symbol">Km</field>
+        </record>
+
+        <record id="tuom_hour" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="tally_symbol">Hr</field>
+        </record>
+
+        <record id="tuom_day" model="tally.uom.map">
+            <field name="uom_id" ref="uom.product_uom_day"/>
+            <field name="tally_symbol">Day</field>
+        </record>
+
+    </data>
+</odoo>
